@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Kairos",
+    "slug": "Kairos",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/kairos-icon.png",
+    "scheme": "kairos",
+    "userInterfaceStyle": "automatic",
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/kairos-icon.png",
+          "imageWidth": 800,
+          "resizeMode": "contain",
+          "backgroundColor": "#1E3A8A"
+        }
+      ],
+      "expo-font",
+      "expo-audio",
+      "expo-web-browser"
+    ],
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/kairos-icon.png",
+        "backgroundColor": "#E6F4FE"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "ios": {
+      "supportsTablet": true
+    }
+  }
+}
