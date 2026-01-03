@@ -20,7 +20,9 @@
       ],
       "expo-font",
       "expo-audio",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-video",
+      "expo-sqlite"
     ],
     "android": {
       "adaptiveIcon": {
