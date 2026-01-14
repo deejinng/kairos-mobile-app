@@ -1,22 +1,35 @@
 // app/(main)/scribe.tsx
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import React, {useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-    Alert,
-    Dimensions,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import Navbar from '../../components/Navbar';
 
 const { width } = Dimensions.get('window');
 
 type ViewMode = 'grid' | 'stack';
-type EntryTag = 'prayer' | 'instruction' | 'insight' | 'song' | 'dream' | 'testimony' | 'burden';
+type EntryTag = 
+  | 'prayer' 
+  | 'instruction' 
+  | 'insight' 
+  | 'song' 
+  | 'dream' 
+  | 'testimony' 
+  | 'burden'
+  | 'prayerpoint'
+  | 'wisdom'
+  | 'word'
+  | 'temptation'
+  | 'meditation';
 
 interface JournalEntry {
   id: string;
@@ -35,6 +48,11 @@ const tagColors: Record<EntryTag, string> = {
   dream: '#06B6D4',
   testimony: '#10B981',
   burden: '#EF4444',
+  prayerpoint: '#F97316',
+  wisdom: '#84CC16',
+  word: '#A78BFA',
+  temptation: '#DC2626',
+  meditation: '#14B8A6',
 };
 
 const tagLabels: Record<EntryTag, string> = {
@@ -44,7 +62,12 @@ const tagLabels: Record<EntryTag, string> = {
   song: 'Song / Poem',
   dream: 'Dream',
   testimony: 'Testimony',
-  burden: 'Burden / Prayer Point',
+  burden: 'Burden',
+  prayerpoint: 'Prayer Point',
+  wisdom: 'Word of Wisdom',
+  word: 'Word',
+  temptation: 'Temptation',
+  meditation: 'Meditation',
 };
 
 export default function ScribeScreen() {
@@ -58,6 +81,36 @@ export default function ScribeScreen() {
   const [content, setContent] = useState('');
   const [scriptureRef, setScriptureRef] = useState('');
   const [selectedTag, setSelectedTag] = useState<EntryTag>('prayer');
+
+  // Load entries from AsyncStorage on mount
+  useEffect(() => {
+    loadEntries();
+  }, []);
+
+  const loadEntries = async () => {
+    try {
+      const stored = await AsyncStorage.getItem('journal_entries');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Convert timestamp strings back to Date objects
+        const entriesWithDates = parsed.map((e: any) => ({
+          ...e,
+          timestamp: new Date(e.timestamp),
+        }));
+        setEntries(entriesWithDates);
+      }
+    } catch (error) {
+      console.error('Failed to load entries:', error);
+    }
+  };
+
+  const saveEntriesToStorage = async (newEntries: JournalEntry[]) => {
+    try {
+      await AsyncStorage.setItem('journal_entries', JSON.stringify(newEntries));
+    } catch (error) {
+      console.error('Failed to save entries:', error);
+    }
+  };
 
   const createNewEntry = () => {
     setCurrentEntry(null);
@@ -84,9 +137,13 @@ export default function ScribeScreen() {
     };
 
     if (currentEntry) {
-      setEntries(entries.map(e => e.id === entry.id ? entry : e));
+      const updated = entries.map(e => e.id === entry.id ? entry : e);
+      setEntries(updated);
+      saveEntriesToStorage(updated);
     } else {
-      setEntries([entry, ...entries]);
+      const updated = [entry, ...entries];
+      setEntries(updated);
+      saveEntriesToStorage(updated);
     }
 
     setShowEditor(false);
@@ -113,7 +170,11 @@ export default function ScribeScreen() {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => setEntries(entries.filter(e => e.id !== id)),
+          onPress: () => {
+            const updated = entries.filter(e => e.id !== id);
+            setEntries(updated);
+            saveEntriesToStorage(updated);
+          },
         },
       ]
     );
@@ -401,6 +462,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
+    flexWrap: 'wrap',
+    gap: 8,
   },
 
   entryTag: {
@@ -418,8 +481,9 @@ const styles = StyleSheet.create({
   },
 
   entryTimestamp: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#BFDBFE',
+    flexShrink: 1,
   },
 
   entryScripture: {
