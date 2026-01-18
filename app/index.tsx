@@ -1,17 +1,21 @@
-import { Inter_400Regular, Inter_600SemiBold, useFonts } from '@expo-google-fonts/inter';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { Cross } from 'lucide-react-native';
-import React, { useEffect } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import {
+  Inter_400Regular,
+  Inter_600SemiBold,
+  useFonts,
+} from "@expo-google-fonts/inter";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { Cross } from "lucide-react-native";
+import React, { useEffect } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   Easing,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 
 // Prevent splash from hiding until fonts are ready
 SplashScreen.preventAutoHideAsync();
@@ -40,7 +44,7 @@ export default function SplashScreenComponent() {
       duration: 1200,
       easing: Easing.out(Easing.cubic),
     });
-  }, [fontsLoaded, iconScale]); // ✅ dependency fixed
+  }, [fontsLoaded, iconScale]);
 
   // Icon animation style
   const iconStyle = useAnimatedStyle(() => ({
@@ -60,24 +64,24 @@ export default function SplashScreenComponent() {
       { duration: 500, easing: Easing.inOut(Easing.ease) },
       () => {
         // Navigate only after animation finishes
-        runOnJS(router.replace)('/(main)/home');
-      }
+        runOnJS(router.replace)("/(main)/home");
+      },
     );
   };
 
-  // While fonts load, show a simple background
+  // While fonts load, show purple background
   if (!fontsLoaded) {
-    return <View style={{ flex: 1, backgroundColor: '#1E3A8A' }} />;
+    return <View style={{ flex: 1, backgroundColor: "#1a0f2e" }} />;
   }
 
   return (
     <Animated.View style={[{ flex: 1 }, screenStyle]}>
       <LinearGradient
-        colors={['#1E3A8A', '#3B82F6']}
+        colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
         style={{
           flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
+          justifyContent: "center",
+          alignItems: "center",
           padding: 20,
         }}
       >
@@ -89,63 +93,63 @@ export default function SplashScreenComponent() {
         {/* App Title */}
         <Text
           style={{
-            fontFamily: 'Inter_600SemiBold',
+            fontFamily: "Inter_600SemiBold",
             fontSize: 36,
-            color: '#FFFFFF',
+            color: "#FFFFFF",
             marginTop: 20,
-            textAlign: 'center',
+            textAlign: "center",
           }}
         >
           Kairos
         </Text>
 
         {/* Subtitle */}
-      <Text
-  style={{
-    fontFamily: 'Inter_400Regular',
-    fontSize: 20,
-    color: '#FFFFFF',
-    opacity: 0.85,
-    marginTop: 10,
-    marginBottom: 30,
-    textAlign: 'center',
-  }}
->
-  Seek your Father in prayer. He hears you.
-</Text>
-
+        <Text
+          style={{
+            fontFamily: "Inter_400Regular",
+            fontSize: 20,
+            color: "#FFFFFF",
+            opacity: 0.85,
+            marginTop: 10,
+            marginBottom: 30,
+            textAlign: "center",
+          }}
+        >
+          Seek your Father in prayer. He hears you.
+        </Text>
 
         {/* Scripture */}
         <Text
           style={{
-            fontFamily: 'Inter_400Regular',
+            fontFamily: "Inter_400Regular",
             fontSize: 16,
-            color: '#FFFFFF',
-            textAlign: 'center',
+            color: "#FFFFFF",
+            textAlign: "center",
             lineHeight: 24,
             opacity: 0.9,
           }}
         >
-          “Men ought always to pray, and not to faint.”{'\n'}– Luke 18:1 (KJV)
+          &quot;Men ought always to pray, and not to faint.&quot;{"\n"}– Luke
+          18:1 (KJV)
         </Text>
 
         {/* Start Button */}
         <TouchableOpacity
           onPress={handleStart}
           style={{
-            position: 'absolute',
+            position: "absolute",
             bottom: 60,
-            backgroundColor: '#FFFFFF',
+            backgroundColor: "#FFFFFF",
             paddingVertical: 14,
-            paddingHorizontal: 110, // wider left & right
+            paddingHorizontal: 110,
             borderRadius: 30,
           }}
         >
           <Text
             style={{
-              color: '#1E3A8A',
+              color: "#5B21B6",
               fontSize: 16,
-              fontFamily: 'Inter_600SemiBold',
+              fontFamily: "Inter_600SemiBold",
               letterSpacing: 1,
             }}
           >

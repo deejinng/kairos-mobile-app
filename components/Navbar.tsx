@@ -1,12 +1,10 @@
+import { usePathname, useRouter } from "expo-router";
+import { BookOpen, Clock, Flame, Info, PenTool } from "lucide-react-native";
+import React from "react";
+import { Dimensions, Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-
-import { usePathname, useRouter } from 'expo-router';
-import { BookOpen, Clock, Flame, Info, PenTool } from 'lucide-react-native';
-import React from 'react';
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 export default function Navbar() {
   const router = useRouter();
@@ -14,30 +12,30 @@ export default function Navbar() {
   const insets = useSafeAreaInsets();
 
   const tabs = [
-    { label: 'Watch', icon: Clock, route: '/(main)/watch' },
-    { label: 'Scripture', icon: BookOpen, route: '/(main)/scripture' },
-    { label: 'Altar', icon: Flame, route: '/(main)/home', isMain: true },
-    { label: 'Scribe', icon: PenTool, route: '/(main)/scribe' },
-    { label: 'About', icon: Info, route: '/(main)/about' },
+    { label: "Watch", icon: Clock, route: "/(main)/watch" },
+    { label: "Scripture", icon: BookOpen, route: "/(main)/scripture" },
+    { label: "Altar", icon: Flame, route: "/(main)/home", isMain: true },
+    { label: "Scribe", icon: PenTool, route: "/(main)/scribe" },
+    { label: "About", icon: Info, route: "/(main)/about" },
   ];
 
   return (
     <View
       style={{
-        position: 'absolute',
+        position: "absolute",
         bottom: 0,
         width,
         paddingBottom: insets.bottom + 8,
-        backgroundColor: '#1E3A8A',
+        backgroundColor: "#1a0f2e",
         borderTopWidth: 1,
-        borderTopColor: 'rgba(255,255,255,0.15)',
+        borderTopColor: "rgba(212, 175, 55, 0.2)",
       }}
     >
       <View
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
           paddingHorizontal: 14,
           height: 70,
         }}
@@ -45,7 +43,7 @@ export default function Navbar() {
         {tabs.map(({ label, icon: Icon, route, isMain }) => {
           const isActive = pathname === route;
 
-          // 🔥 ALTAR — CENTER, RAISED, GOLD-ANNOINTED
+          // 🔥 ALTAR — CENTER, RAISED, GLOWING GOLD
           if (isMain) {
             return (
               <TouchableOpacity
@@ -54,49 +52,63 @@ export default function Navbar() {
                 activeOpacity={0.85}
                 style={{
                   flex: 1,
-                  alignItems: 'center',
-                  marginTop: -34, // stays lifted
+                  alignItems: "center",
+                  marginTop: -34,
                 }}
               >
-                {/* GOLD OUTER RING */}
+                {/* OUTER GLOW */}
                 <View
                   style={{
-                    width: 72,
-                    height: 72,
-                    borderRadius: 36,
-                    backgroundColor: '#D4AF37', // 👑 GOLD
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    shadowColor: '#FFD700',
-                    shadowOpacity: 0.45,
-                    shadowRadius: 10,
-                    elevation: 10,
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    backgroundColor: "rgba(212, 175, 55, 0.3)",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    position: "absolute",
+                    shadowColor: "#D4AF37",
+                    shadowOpacity: 0.8,
+                    shadowRadius: 20,
+                    shadowOffset: { width: 0, height: 0 },
+                    elevation: 15,
+                  }}
+                />
+
+                {/* GOLD RING */}
+                <View
+                  style={{
+                    width: 70,
+                    height: 70,
+                    borderRadius: 35,
+                    backgroundColor: "#1a0f2e",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderWidth: 3,
+                    borderColor: "#D4AF37",
                   }}
                 >
-                  {/* BLUE INNER CORE */}
+                  {/* PURPLE INNER CORE */}
                   <View
                     style={{
-                      width: 60,
-                      height: 60,
-                      borderRadius: 30,
-                      backgroundColor: '#1E40AF',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderWidth: 2,
-                      borderColor: '#FACC15', // soft gold trim
+                      width: 58,
+                      height: 58,
+                      borderRadius: 29,
+                      backgroundColor: "#4C1D95",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
-                    <Icon size={28} color="#FFFFFF" strokeWidth={2.6} />
+                    <Icon size={28} color="#D4AF37" strokeWidth={2.5} />
                   </View>
                 </View>
 
                 <Text
                   style={{
-                    marginTop: 6,
+                    marginTop: 46,
                     fontSize: 11,
-                    color: '#FACC15', // GOLD TEXT
-                    fontWeight: '700',
-                    letterSpacing: 0.6,
+                    color: "#D4AF37",
+                    fontWeight: "700",
+                    letterSpacing: 1,
                   }}
                 >
                   ALTAR
@@ -110,21 +122,23 @@ export default function Navbar() {
             <TouchableOpacity
               key={label}
               onPress={() => router.replace(route as any)}
-              style={{ flex: 1, alignItems: 'center', gap: 4 }}
+              style={{ flex: 1, alignItems: "center", gap: 4 }}
               activeOpacity={0.7}
             >
               <Icon
                 size={22}
-                color={isActive ? '#FFFFFF' : 'rgba(255,255,255,0.55)'}
+                color={isActive ? "#D4AF37" : "rgba(255,255,255,0.5)"}
+                strokeWidth={isActive ? 2.5 : 2}
               />
               <Text
                 style={{
                   fontSize: 10,
-                  color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.55)',
-                  fontWeight: isActive ? '600' : '400',
+                  color: isActive ? "#D4AF37" : "rgba(255,255,255,0.5)",
+                  fontWeight: isActive ? "700" : "400",
+                  letterSpacing: 0.5,
                 }}
               >
-                {label}
+                {label.toUpperCase()}
               </Text>
             </TouchableOpacity>
           );
@@ -133,7 +147,3 @@ export default function Navbar() {
     </View>
   );
 }
-
-
-
-

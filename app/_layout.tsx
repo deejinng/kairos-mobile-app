@@ -1,33 +1,42 @@
-// app/_layout.tsx
-import { Poppins_400Regular, Poppins_700Bold, useFonts } from "@expo-google-fonts/poppins";
+import {
+  useFonts,
+  Poppins_400Regular,
+  Poppins_700Bold,
+} from "@expo-google-fonts/poppins";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import "../global.css";
-
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import BackgroundGradient from "@/components/BackgroundGradient";
+import "../global.css"; // Keep if you're using Tailwind/NativeWind
 
+// Prevent splash from auto-hiding (do this outside the component)
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_700Bold,
+  const [fontsLoaded, fontError] = useFonts({
+    PoppinsRegular: Poppins_400Regular,
+    PoppinsBold: Poppins_700Bold,
+    // Add more fonts here if needed
   });
 
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    if (fontsLoaded || fontError) {
+      // Hide splash even if fonts failed → better UX than stuck splash
+      SplashScreen.hideAsync().catch(console.warn);
+    }
+  }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded) return null;
+  // Important: show nothing (keep splash) until fonts are ready or failed
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
 
   return (
     <SafeAreaProvider>
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    />
+      <BackgroundGradient>
+        <Stack screenOptions={{ headerShown: false }} />
+      </BackgroundGradient>
     </SafeAreaProvider>
   );
 }
