@@ -534,7 +534,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 60,
     paddingHorizontal: 24,
-    paddingBottom: 120,
+    paddingBottom: 160,
   },
 
   editorHeader: {
