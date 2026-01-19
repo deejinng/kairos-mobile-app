@@ -13,7 +13,7 @@ export default function Navbar() {
 
   const tabs = [
     { label: "Watch", icon: Clock, route: "/(main)/watch" },
-    { label: "Scripture", icon: BookOpen, route: "/(main)/scripture" },
+    { label: "Meditations", icon: BookOpen, route: "/(main)/meditations" },
     { label: "Altar", icon: Flame, route: "/(main)/home", isMain: true },
     { label: "Scribe", icon: PenTool, route: "/(main)/scribe" },
     { label: "About", icon: Info, route: "/(main)/about" },

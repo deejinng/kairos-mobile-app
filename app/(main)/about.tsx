@@ -1,6 +1,6 @@
 // app/(main)/about.tsx
-import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -10,12 +10,12 @@ import {
   TouchableOpacity,
   Modal,
   Linking,
-} from 'react-native';
-import Navbar from '../../components/Navbar';
+} from "react-native";
+import Navbar from "../../components/Navbar";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
-const EMAIL = 'olateju202@gmail.com';
+const EMAIL = "olateju202@gmail.com";
 
 export default function AboutScreen() {
   const [contactVisible, setContactVisible] = useState(false);
@@ -25,21 +25,23 @@ export default function AboutScreen() {
   };
 
   return (
-    <LinearGradient colors={['#1E3A8A', '#3B82F6']} style={styles.container}>
+    <LinearGradient
+      colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
+      style={styles.container}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.header}>About Kairos</Text>
 
         {/* Original About Section */}
         <View style={styles.card}>
           <Text style={styles.paragraph}>
-            Kairos is a space for alignment.
-            A quiet companion for prayer, reflection,
-            and attentiveness to God.
+            Kairos is a space for alignment. A quiet companion for prayer,
+            reflection, and attentiveness to God.
           </Text>
 
           <Text style={styles.paragraph}>
-            It is built around sacred rhythms in Scripture —
-            moments where God invites response.
+            It is built around sacred rhythms in Scripture — moments where God
+            invites response.
           </Text>
         </View>
 
@@ -47,16 +49,13 @@ export default function AboutScreen() {
         <Text style={styles.section}>Why Kairos Exists</Text>
         <View style={styles.card}>
           <Text style={styles.paragraph}>
-            Modern life moves fast.
-            Attention is scattered.
-            Prayer is often rushed, postponed, or reduced to habit.
+            Modern life moves fast. Attention is scattered. Prayer is often
+            rushed, postponed, or reduced to habit.
           </Text>
 
           <Text style={styles.paragraph}>
-            Kairos was built to restore rhythm.
-            To slow the soul.
-            To help believers return to prayer not as duty,
-            but as relationship.
+            Kairos was built to restore rhythm. To slow the soul. To help
+            believers return to prayer not as duty, but as relationship.
           </Text>
         </View>
 
@@ -81,18 +80,17 @@ export default function AboutScreen() {
         <Text style={styles.section}>A Gentle Reminder</Text>
         <View style={styles.card}>
           <Text style={styles.paragraph}>
-            Kairos does not replace Scripture.
-            It does not replace the Church.
+            Kairos does not replace Scripture. It does not replace the Church.
             It does not replace personal devotion.
           </Text>
 
           <Text style={styles.paragraph}>
-            It is a companion — a quiet tool meant to support
-            discipline, attentiveness, and faithfulness.
+            It is a companion — a quiet tool meant to support discipline,
+            attentiveness, and faithfulness.
           </Text>
         </View>
 
-        {/* Get Involved Section (from first version) */}
+        {/* Get Involved Section */}
         <Text style={styles.section}>Get Involved</Text>
         <View style={styles.card}>
           <ActionButton
@@ -102,17 +100,17 @@ export default function AboutScreen() {
 
           <ActionButton
             label="Report an Issue"
-            onPress={() => sendEmail('Kairos App — Issue Report')}
+            onPress={() => sendEmail("Kairos App — Issue Report")}
           />
 
           <ActionButton
             label="Suggest a Feature"
-            onPress={() => sendEmail('Kairos App — Feature Suggestion')}
+            onPress={() => sendEmail("Kairos App — Feature Suggestion")}
           />
 
           <ActionButton
             label="Send Feedback"
-            onPress={() => sendEmail('Kairos App — Feedback')}
+            onPress={() => sendEmail("Kairos App — Feedback")}
           />
         </View>
 
@@ -120,24 +118,22 @@ export default function AboutScreen() {
         <Text style={styles.section}>Support Development</Text>
         <View style={styles.card}>
           <Text style={styles.paragraph}>
-            Kairos is independently built and maintained.
-            If this app has helped you,
-            you may support its development.
+            Kairos is independently built and maintained. If this app has helped
+            you, you may support its development.
           </Text>
 
-          <Text style={styles.paragraph}>
+          <Text style={styles.supportInfo}>
             Moniepoint
-            {'\n'}Account Number: 8086976247
+            {"\n"}Account Number: 8086976247
           </Text>
         </View>
 
         {/* Final Footer with Psalm */}
         <Text style={styles.footer}>
-          “Teach us to number our days,
-          that we may apply our hearts unto wisdom.”
-          {'\n'}— Psalm 90:12{'\n\n'}
-          Kairos exists to serve,
-          not to impress.
+          &quot;Teach us to number our days, that we may apply our hearts unto
+          wisdom.&quot;
+          {"\n"}— Psalm 90:12{"\n\n"}
+          Kairos exists to serve, not to impress.
         </Text>
       </ScrollView>
 
@@ -151,13 +147,13 @@ export default function AboutScreen() {
 
             <Text style={styles.modalText}>
               Email:
-              {'\n'}olateju202@gmail.com
+              {"\n"}olateju202@gmail.com
             </Text>
 
             <Text style={styles.modalText}>
               Phone:
-              {'\n'}+234 808 697 6247
-              {'\n'}+234 916 307 8466
+              {"\n"}+234 808 697 6247
+              {"\n"}+234 916 307 8466
             </Text>
 
             <TouchableOpacity
@@ -195,110 +191,127 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     paddingTop: 100,
-    paddingBottom: 140,
+    paddingBottom: 160, // Extra padding for navbar
     paddingHorizontal: 26,
   },
 
   header: {
     fontSize: 34,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontWeight: "700",
+    color: "#FFFFFF",
     marginBottom: 24,
-    textAlign: 'center',
+    textAlign: "center",
+    letterSpacing: 1,
   },
 
   section: {
     fontSize: 22,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: "600",
+    color: "#D4AF37",
     marginTop: 36,
     marginBottom: 14,
+    letterSpacing: 0.5,
   },
 
   card: {
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: "rgba(255,255,255,0.08)",
     padding: 24,
     borderRadius: 24,
     width: width * 0.92,
     maxWidth: 440,
-    alignSelf: 'center',
+    alignSelf: "center",
+    borderWidth: 1,
+    borderColor: "rgba(212, 175, 55, 0.2)",
   },
 
   paragraph: {
     fontSize: 17,
-    color: '#E5E7EB',
+    color: "rgba(255, 255, 255, 0.85)",
     lineHeight: 28,
     marginBottom: 12,
   },
 
+  supportInfo: {
+    fontSize: 17,
+    color: "#D4AF37",
+    lineHeight: 26,
+    marginTop: 8,
+    fontWeight: "600",
+  },
+
   actionBtn: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "transparent",
     paddingVertical: 14,
     paddingHorizontal: 18,
     borderRadius: 22,
     marginBottom: 12,
+    borderWidth: 2,
+    borderColor: "#D4AF37",
   },
 
   actionText: {
-    color: '#1E3A8A',
+    color: "#D4AF37",
     fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: "700",
+    textAlign: "center",
+    letterSpacing: 0.5,
   },
 
   footer: {
     marginTop: 50,
     fontSize: 16,
-    color: '#E0E7FF',
-    textAlign: 'center',
+    color: "rgba(255, 255, 255, 0.6)",
+    textAlign: "center",
     lineHeight: 26,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
 
   /* MODAL */
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(15,23,42,0.85)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(26, 15, 46, 0.95)",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 24,
   },
 
   modalCard: {
-    backgroundColor: '#1E3A8A',
+    backgroundColor: "#2d1b4e",
     borderRadius: 24,
     padding: 26,
     width: width * 0.9,
     maxWidth: 400,
+    borderWidth: 1,
+    borderColor: "rgba(212, 175, 55, 0.3)",
   },
 
   modalTitle: {
     fontSize: 22,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: "700",
+    color: "#FFFFFF",
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
 
   modalText: {
     fontSize: 16,
-    color: '#E5E7EB',
+    color: "rgba(255, 255, 255, 0.85)",
     lineHeight: 26,
     marginBottom: 14,
-    textAlign: 'center',
+    textAlign: "center",
   },
 
   modalBtn: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#D4AF37",
     paddingVertical: 14,
     borderRadius: 22,
     marginTop: 10,
   },
 
   modalBtnText: {
-    color: '#1E3A8A',
+    color: "#1a0f2e",
     fontSize: 16,
-    fontWeight: '700',
-    textAlign: 'center',
+    fontWeight: "700",
+    textAlign: "center",
   },
 });
