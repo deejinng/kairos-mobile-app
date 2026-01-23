@@ -2,18 +2,28 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import {
+  Dimensions,
+  Linking,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
-  View,
-  Dimensions,
   TouchableOpacity,
-  Modal,
-  Linking,
+  View,
 } from "react-native";
 import Navbar from "../../components/Navbar";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+
+// Responsive helpers
+const isSmallDevice = width < 375;
+const isTablet = width >= 768;
+
+const scale = (size: number) => {
+  if (isTablet) return size * 1.2;
+  if (isSmallDevice) return size * 0.9;
+  return size;
+};
 
 const EMAIL = "olateju202@gmail.com";
 
@@ -29,7 +39,10 @@ export default function AboutScreen() {
       colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={styles.header}>About Kairos</Text>
 
         {/* Original About Section */}
@@ -40,7 +53,7 @@ export default function AboutScreen() {
           </Text>
 
           <Text style={styles.paragraph}>
-            It is built around sacred rhythms in Scripture — moments where God
+            It is built around sacred rhythms in Scripture, moments where God
             invites response.
           </Text>
         </View>
@@ -85,7 +98,7 @@ export default function AboutScreen() {
           </Text>
 
           <Text style={styles.paragraph}>
-            It is a companion — a quiet tool meant to support discipline,
+            It is a companion, a quiet tool meant to support discipline,
             attentiveness, and faithfulness.
           </Text>
         </View>
@@ -190,58 +203,61 @@ const styles = StyleSheet.create({
 
   content: {
     flexGrow: 1,
-    paddingTop: 100,
-    paddingBottom: 160, // Extra padding for navbar
-    paddingHorizontal: 26,
+    paddingTop: scale(100),
+    paddingBottom: 180, // Extra padding for navbar
+    paddingHorizontal: isTablet ? 40 : 26,
+    minHeight: height,
   },
 
   header: {
-    fontSize: 34,
+    fontSize: scale(34),
     fontWeight: "700",
     color: "#FFFFFF",
-    marginBottom: 24,
+    marginBottom: scale(24),
     textAlign: "center",
     letterSpacing: 1,
   },
 
   section: {
-    fontSize: 22,
+    fontSize: scale(22),
     fontWeight: "600",
     color: "#D4AF37",
-    marginTop: 36,
-    marginBottom: 14,
+    marginTop: scale(36),
+    marginBottom: scale(14),
     letterSpacing: 0.5,
+    textAlign: isTablet ? "center" : "left",
   },
 
   card: {
     backgroundColor: "rgba(255,255,255,0.08)",
-    padding: 24,
+    padding: isTablet ? 28 : 24,
     borderRadius: 24,
-    width: width * 0.92,
-    maxWidth: 440,
+    width: "100%",
+    maxWidth: isTablet ? 700 : 440,
     alignSelf: "center",
     borderWidth: 1,
     borderColor: "rgba(212, 175, 55, 0.2)",
+    marginBottom: scale(16),
   },
 
   paragraph: {
-    fontSize: 17,
+    fontSize: scale(17),
     color: "rgba(255, 255, 255, 0.85)",
-    lineHeight: 28,
+    lineHeight: scale(28),
     marginBottom: 12,
   },
 
   supportInfo: {
-    fontSize: 17,
+    fontSize: scale(17),
     color: "#D4AF37",
-    lineHeight: 26,
+    lineHeight: scale(26),
     marginTop: 8,
     fontWeight: "600",
   },
 
   actionBtn: {
     backgroundColor: "transparent",
-    paddingVertical: 14,
+    paddingVertical: scale(14),
     paddingHorizontal: 18,
     borderRadius: 22,
     marginBottom: 12,
@@ -251,18 +267,19 @@ const styles = StyleSheet.create({
 
   actionText: {
     color: "#D4AF37",
-    fontSize: 16,
+    fontSize: scale(16),
     fontWeight: "700",
     textAlign: "center",
     letterSpacing: 0.5,
   },
 
   footer: {
-    marginTop: 50,
-    fontSize: 16,
+    marginTop: scale(50),
+    marginBottom: 50,
+    fontSize: scale(16),
     color: "rgba(255, 255, 255, 0.6)",
     textAlign: "center",
-    lineHeight: 26,
+    lineHeight: scale(26),
     fontStyle: "italic",
   },
 
@@ -278,15 +295,15 @@ const styles = StyleSheet.create({
   modalCard: {
     backgroundColor: "#2d1b4e",
     borderRadius: 24,
-    padding: 26,
-    width: width * 0.9,
-    maxWidth: 400,
+    padding: isTablet ? 32 : 26,
+    width: "90%",
+    maxWidth: isTablet ? 500 : 400,
     borderWidth: 1,
     borderColor: "rgba(212, 175, 55, 0.3)",
   },
 
   modalTitle: {
-    fontSize: 22,
+    fontSize: scale(22),
     fontWeight: "700",
     color: "#FFFFFF",
     marginBottom: 16,
@@ -294,23 +311,23 @@ const styles = StyleSheet.create({
   },
 
   modalText: {
-    fontSize: 16,
+    fontSize: scale(16),
     color: "rgba(255, 255, 255, 0.85)",
-    lineHeight: 26,
+    lineHeight: scale(26),
     marginBottom: 14,
     textAlign: "center",
   },
 
   modalBtn: {
     backgroundColor: "#D4AF37",
-    paddingVertical: 14,
+    paddingVertical: scale(14),
     borderRadius: 22,
     marginTop: 10,
   },
 
   modalBtnText: {
     color: "#1a0f2e",
-    fontSize: 16,
+    fontSize: scale(16),
     fontWeight: "700",
     textAlign: "center",
   },

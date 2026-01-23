@@ -465,6 +465,7 @@ export default function Home() {
               <Text style={styles.startIcon}>✨</Text>
               <Text style={styles.startText}>START PRAYING</Text>
             </TouchableOpacity>
+            <View style={{ height: 80 }} />
           </>
         )}
 
@@ -644,12 +645,27 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     fontWeight: "600",
   },
+  // startButton: {
+  //   backgroundColor: "transparent",
+  //   paddingVertical: 16,
+  //   paddingHorizontal: 60,
+  //   borderRadius: 40,
+  //   marginTop: 30,
+  //   minWidth: 260,
+  //   borderWidth: 2,
+  //   borderColor: "#D4AF37",
+  //   flexDirection: "row",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   gap: 8,
+  // },
   startButton: {
     backgroundColor: "transparent",
     paddingVertical: 16,
     paddingHorizontal: 60,
     borderRadius: 40,
     marginTop: 30,
+    marginBottom: 40, // 👈 ADD THIS
     minWidth: 260,
     borderWidth: 2,
     borderColor: "#D4AF37",
@@ -658,6 +674,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
+
   disabledButton: { borderColor: "#4A4A4A", opacity: 0.5 },
   startIcon: {
     fontSize: 18,

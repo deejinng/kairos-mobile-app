@@ -6,7 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
+  // TouchableOpacity,
   View,
 } from "react-native";
 import Navbar from "../../components/Navbar";
@@ -17,15 +17,20 @@ import { dailyVerses } from "../../constants/daily-verses";
 import { dailyQuotes } from "../../constants/spiritual-quotes";
 import { themes } from "../../constants/themes";
 
-const { width } = Dimensions.get("window");
-// const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
+// Responsive helper functions
+const isSmallDevice = width < 375;
 const isTablet = width >= 768;
 
-const scale = (size: number) => (width / 375) * size;
+const scale = (size: number) => {
+  if (isTablet) return size * 1.2;
+  if (isSmallDevice) return size * 0.9;
+  return size;
+};
 
 export default function MeditationScreen() {
-  const [expandedTheme, setExpandedTheme] = useState<string | null>(null);
+  // const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
 
   // Get daily content based on day of year
   const dayOfYear = useMemo(() => {
@@ -36,16 +41,29 @@ export default function MeditationScreen() {
     return Math.floor(diff / oneDay);
   }, []);
 
+  // Today's rotating content
   const todaysVerse = dailyVerses[dayOfYear % dailyVerses.length];
   const todaysQuote = dailyQuotes[dayOfYear % dailyQuotes.length];
   const todaysPsalm = dailyPsalms[dayOfYear % dailyPsalms.length];
+
+  // TODAY'S THEME - picks ONE theme per day
+  const themeKeys = Object.keys(themes);
+  const todaysThemeKey = themeKeys[dayOfYear % themeKeys.length];
+  const todaysTheme = themes[todaysThemeKey as keyof typeof themes];
+  const todaysThemeVerse =
+    todaysTheme.verses[
+      Math.floor(dayOfYear / themeKeys.length) % todaysTheme.verses.length
+    ];
 
   return (
     <LinearGradient
       colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={styles.header}>Meditation</Text>
         <Text style={styles.subtitle}>Feed your soul with God&apos;s Word</Text>
 
@@ -70,15 +88,36 @@ export default function MeditationScreen() {
           <Text style={styles.psalmRef}>{todaysPsalm.ref}</Text>
         </View>
 
-        {/* THEMATIC SCRIPTURES */}
-        <Text style={styles.sectionTitle}>Scriptures by Theme</Text>
+        {/* TODAY'S THEME - ONE THEME PER DAY */}
+        <View
+          style={[
+            styles.todaysThemeCard,
+            { borderColor: todaysTheme.color + "80" },
+          ]}
+        >
+          <Text style={styles.cardLabel}>TODAY&apos;S THEME</Text>
+          <View style={styles.themeHeader}>
+            <View
+              style={[styles.themeDot, { backgroundColor: todaysTheme.color }]}
+            />
+            <Text style={styles.todaysThemeTitle}>{todaysTheme.title}</Text>
+          </View>
+          <Text style={styles.verseText}>{todaysThemeVerse.text}</Text>
+          <Text style={styles.verseRef}>{todaysThemeVerse.ref}</Text>
+        </View>
 
+        {/* ALL THEMES - BROWSE */}
+        {/* <Text style={styles.sectionTitle}>All Themes</Text>
+        <Text style={styles.sectionSubtitle}>
+          Tap to explore scriptures by theme
+        </Text> */}
+        {/* 
         {Object.entries(themes).map(([key, theme]) => (
           <View key={key} style={styles.themeCard}>
             <TouchableOpacity
-              style={styles.themeHeader}
+              style={styles.themeHeaderButton}
               onPress={() =>
-                setExpandedTheme(expandedTheme === key ? null : key)
+                setSelectedTheme(selectedTheme === key ? null : key)
               }
             >
               <View
@@ -86,11 +125,11 @@ export default function MeditationScreen() {
               />
               <Text style={styles.themeTitle}>{theme.title}</Text>
               <Text style={styles.themeChevron}>
-                {expandedTheme === key ? "▼" : "▶"}
+                {selectedTheme === key ? "▼" : "▶"}
               </Text>
             </TouchableOpacity>
 
-            {expandedTheme === key && (
+            {selectedTheme === key && (
               <View style={styles.themeExpanded}>
                 {theme.verses.map((verse, idx) => (
                   <View key={idx} style={styles.themeVerse}>
@@ -101,7 +140,7 @@ export default function MeditationScreen() {
               </View>
             )}
           </View>
-        ))}
+        ))} */}
 
         <Text style={styles.footer}>
           &quot;Thy word is a lamp unto my feet, and a light unto my path.&quot;
@@ -120,21 +159,14 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    paddingTop: 80,
-    paddingBottom: 160,
-    paddingHorizontal: 24,
+    paddingTop: scale(80),
+    paddingBottom: 180, // Extra space for navbar
+    paddingHorizontal: isTablet ? 40 : 24,
+    minHeight: height,
   },
 
-  //   header: {
-  //     fontSize: 34,
-  //     fontWeight: "700",
-  //     color: "#FFFFFF",
-  //     marginBottom: 8,
-  //     textAlign: "center",
-  //     letterSpacing: 1,
-  //   },
   header: {
-    fontSize: scale(isTablet ? 40 : 34),
+    fontSize: scale(34),
     fontWeight: "700",
     color: "#FFFFFF",
     marginBottom: 8,
@@ -143,55 +175,68 @@ const styles = StyleSheet.create({
   },
 
   subtitle: {
-    fontSize: 16,
+    fontSize: scale(16),
     color: "#D4AF37",
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: scale(30),
     letterSpacing: 1,
   },
 
   dailyCard: {
     backgroundColor: "rgba(212, 175, 55, 0.15)",
-    padding: 24,
+    padding: isTablet ? 28 : 24,
     borderRadius: 20,
     marginBottom: 20,
     borderWidth: 1,
     borderColor: "rgba(212, 175, 55, 0.3)",
+    width: "100%",
+    maxWidth: isTablet ? 700 : undefined,
+    alignSelf: "center",
   },
 
   quoteCard: {
     backgroundColor: "rgba(139, 92, 246, 0.15)",
-    padding: 24,
+    padding: isTablet ? 28 : 24,
     borderRadius: 20,
     marginBottom: 20,
     borderWidth: 1,
     borderColor: "rgba(139, 92, 246, 0.3)",
+    width: "100%",
+    maxWidth: isTablet ? 700 : undefined,
+    alignSelf: "center",
   },
 
   psalmCard: {
     backgroundColor: "rgba(20, 184, 166, 0.15)",
-    padding: 24,
+    padding: isTablet ? 28 : 24,
     borderRadius: 20,
-    marginBottom: 30,
+    marginBottom: 20,
     borderWidth: 1,
     borderColor: "rgba(20, 184, 166, 0.3)",
+    width: "100%",
+    maxWidth: isTablet ? 700 : undefined,
+    alignSelf: "center",
+  },
+
+  todaysThemeCard: {
+    backgroundColor: "rgba(255,255,255,0.08)",
+    padding: isTablet ? 28 : 24,
+    borderRadius: 20,
+    marginBottom: 30,
+    borderWidth: 2,
+    width: "100%",
+    maxWidth: isTablet ? 700 : undefined,
+    alignSelf: "center",
   },
 
   cardLabel: {
-    fontSize: 11,
+    fontSize: scale(11),
     fontWeight: "700",
     color: "#D4AF37",
     letterSpacing: 2,
     marginBottom: 12,
   },
 
-  //   verseText: {
-  //     fontSize: 18,
-  //     color: "#FFFFFF",
-  //     lineHeight: 30,
-  //     marginBottom: 12,
-  //     fontStyle: "italic",
-  //   },
   verseText: {
     fontSize: scale(18),
     lineHeight: scale(30),
@@ -201,47 +246,68 @@ const styles = StyleSheet.create({
   },
 
   verseRef: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: "#D4AF37",
     fontWeight: "600",
     textAlign: "right",
   },
 
   quoteText: {
-    fontSize: 17,
+    fontSize: scale(17),
     color: "#FFFFFF",
-    lineHeight: 28,
+    lineHeight: scale(28),
     marginBottom: 12,
     fontStyle: "italic",
   },
 
   quoteAuthor: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: "#A78BFA",
     fontWeight: "600",
     textAlign: "right",
   },
 
   psalmText: {
-    fontSize: 17,
+    fontSize: scale(17),
     color: "#FFFFFF",
-    lineHeight: 28,
+    lineHeight: scale(28),
     marginBottom: 12,
   },
 
   psalmRef: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: "#14B8A6",
     fontWeight: "600",
     textAlign: "right",
   },
 
+  themeHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+
+  todaysThemeTitle: {
+    fontSize: scale(20),
+    fontWeight: "700",
+    color: "#FFFFFF",
+    marginLeft: 8,
+  },
+
   sectionTitle: {
-    fontSize: 24,
+    fontSize: scale(24),
     fontWeight: "600",
     color: "#FFFFFF",
     marginTop: 20,
+    marginBottom: 10,
+    textAlign: isTablet ? "center" : "left",
+  },
+
+  sectionSubtitle: {
+    fontSize: scale(14),
+    color: "rgba(255, 255, 255, 0.6)",
     marginBottom: 20,
+    textAlign: isTablet ? "center" : "left",
   },
 
   themeCard: {
@@ -251,9 +317,12 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.1)",
+    width: "100%",
+    maxWidth: isTablet ? 700 : undefined,
+    alignSelf: "center",
   },
 
-  themeHeader: {
+  themeHeaderButton: {
     flexDirection: "row",
     alignItems: "center",
     padding: 18,
@@ -268,13 +337,13 @@ const styles = StyleSheet.create({
 
   themeTitle: {
     flex: 1,
-    fontSize: 18,
+    fontSize: scale(18),
     fontWeight: "700",
     color: "#FFFFFF",
   },
 
   themeChevron: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: "#D4AF37",
   },
 
@@ -291,24 +360,25 @@ const styles = StyleSheet.create({
   },
 
   themeVerseText: {
-    fontSize: 16,
+    fontSize: scale(16),
     color: "rgba(255, 255, 255, 0.9)",
-    lineHeight: 26,
+    lineHeight: scale(26),
     marginBottom: 8,
   },
 
   themeVerseRef: {
-    fontSize: 13,
+    fontSize: scale(13),
     color: "#D4AF37",
     fontWeight: "600",
   },
 
   footer: {
     marginTop: 40,
-    fontSize: 15,
+    fontSize: scale(15),
     color: "rgba(255, 255, 255, 0.6)",
     textAlign: "center",
-    lineHeight: 24,
+    lineHeight: scale(24),
     fontStyle: "italic",
+    marginBottom: 20,
   },
 });
