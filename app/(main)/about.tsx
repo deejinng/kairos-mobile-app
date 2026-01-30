@@ -5,6 +5,7 @@ import {
   Dimensions,
   Linking,
   Modal,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -39,116 +40,118 @@ export default function AboutScreen() {
       colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
       style={styles.container}
     >
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.header}>About Kairos</Text>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.header}>About Kairos</Text>
 
-        {/* Original About Section */}
-        <View style={styles.card}>
-          <Text style={styles.paragraph}>
-            Kairos is a space for alignment. A quiet companion for prayer,
-            reflection, and attentiveness to God.
+          {/* Original About Section */}
+          <View style={styles.card}>
+            <Text style={styles.paragraph}>
+              Kairos is a space for alignment. A quiet companion for prayer,
+              reflection, and attentiveness to God.
+            </Text>
+
+            <Text style={styles.paragraph}>
+              It is built around sacred rhythms in Scripture, moments where God
+              invites response.
+            </Text>
+          </View>
+
+          {/* New: Why Kairos Exists */}
+          <Text style={styles.section}>Why Kairos Exists</Text>
+          <View style={styles.card}>
+            <Text style={styles.paragraph}>
+              Modern life moves fast. Attention is scattered. Prayer is often
+              rushed, postponed, or reduced to habit.
+            </Text>
+
+            <Text style={styles.paragraph}>
+              Kairos was built to restore rhythm. To slow the soul. To help
+              believers return to prayer not as duty, but as relationship.
+            </Text>
+          </View>
+
+          {/* New: How to Use This App */}
+          <Text style={styles.section}>How to Use This App</Text>
+          <View style={styles.card}>
+            <Text style={styles.paragraph}>
+              • Begin with the Home altar to enter prayer.
+            </Text>
+            <Text style={styles.paragraph}>
+              • Learn the meaning of sacred hours in Watch.
+            </Text>
+            <Text style={styles.paragraph}>
+              • Feed your prayers with Scripture.
+            </Text>
+            <Text style={styles.paragraph}>
+              • Record what God speaks in Scribe.
+            </Text>
+          </View>
+
+          {/* New: A Gentle Reminder */}
+          <Text style={styles.section}>A Gentle Reminder</Text>
+          <View style={styles.card}>
+            <Text style={styles.paragraph}>
+              Kairos does not replace Scripture. It does not replace the Church.
+              It does not replace personal devotion.
+            </Text>
+
+            <Text style={styles.paragraph}>
+              It is a companion, a quiet tool meant to support discipline,
+              attentiveness, and faithfulness.
+            </Text>
+          </View>
+
+          {/* Get Involved Section */}
+          <Text style={styles.section}>Get Involved</Text>
+          <View style={styles.card}>
+            <ActionButton
+              label="Contact the Developer"
+              onPress={() => setContactVisible(true)}
+            />
+
+            <ActionButton
+              label="Report an Issue"
+              onPress={() => sendEmail("Kairos App — Issue Report")}
+            />
+
+            <ActionButton
+              label="Suggest a Feature"
+              onPress={() => sendEmail("Kairos App — Feature Suggestion")}
+            />
+
+            <ActionButton
+              label="Send Feedback"
+              onPress={() => sendEmail("Kairos App — Feedback")}
+            />
+          </View>
+
+          {/* Support Development */}
+          <Text style={styles.section}>Support Development</Text>
+          <View style={styles.card}>
+            <Text style={styles.paragraph}>
+              Kairos is independently built and maintained. If this app has
+              helped you, you may support its development.
+            </Text>
+
+            <Text style={styles.supportInfo}>
+              Moniepoint
+              {"\n"}Account Number: 8086976247
+            </Text>
+          </View>
+
+          {/* Final Footer with Psalm */}
+          <Text style={styles.footer}>
+            &quot;Teach us to number our days, that we may apply our hearts unto
+            wisdom.&quot;
+            {"\n"}— Psalm 90:12{"\n\n"}
+            Kairos exists to serve, not to impress.
           </Text>
-
-          <Text style={styles.paragraph}>
-            It is built around sacred rhythms in Scripture, moments where God
-            invites response.
-          </Text>
-        </View>
-
-        {/* New: Why Kairos Exists */}
-        <Text style={styles.section}>Why Kairos Exists</Text>
-        <View style={styles.card}>
-          <Text style={styles.paragraph}>
-            Modern life moves fast. Attention is scattered. Prayer is often
-            rushed, postponed, or reduced to habit.
-          </Text>
-
-          <Text style={styles.paragraph}>
-            Kairos was built to restore rhythm. To slow the soul. To help
-            believers return to prayer not as duty, but as relationship.
-          </Text>
-        </View>
-
-        {/* New: How to Use This App */}
-        <Text style={styles.section}>How to Use This App</Text>
-        <View style={styles.card}>
-          <Text style={styles.paragraph}>
-            • Begin with the Home altar to enter prayer.
-          </Text>
-          <Text style={styles.paragraph}>
-            • Learn the meaning of sacred hours in Watch.
-          </Text>
-          <Text style={styles.paragraph}>
-            • Feed your prayers with Scripture.
-          </Text>
-          <Text style={styles.paragraph}>
-            • Record what God speaks in Scribe.
-          </Text>
-        </View>
-
-        {/* New: A Gentle Reminder */}
-        <Text style={styles.section}>A Gentle Reminder</Text>
-        <View style={styles.card}>
-          <Text style={styles.paragraph}>
-            Kairos does not replace Scripture. It does not replace the Church.
-            It does not replace personal devotion.
-          </Text>
-
-          <Text style={styles.paragraph}>
-            It is a companion, a quiet tool meant to support discipline,
-            attentiveness, and faithfulness.
-          </Text>
-        </View>
-
-        {/* Get Involved Section */}
-        <Text style={styles.section}>Get Involved</Text>
-        <View style={styles.card}>
-          <ActionButton
-            label="Contact the Developer"
-            onPress={() => setContactVisible(true)}
-          />
-
-          <ActionButton
-            label="Report an Issue"
-            onPress={() => sendEmail("Kairos App — Issue Report")}
-          />
-
-          <ActionButton
-            label="Suggest a Feature"
-            onPress={() => sendEmail("Kairos App — Feature Suggestion")}
-          />
-
-          <ActionButton
-            label="Send Feedback"
-            onPress={() => sendEmail("Kairos App — Feedback")}
-          />
-        </View>
-
-        {/* Support Development */}
-        <Text style={styles.section}>Support Development</Text>
-        <View style={styles.card}>
-          <Text style={styles.paragraph}>
-            Kairos is independently built and maintained. If this app has helped
-            you, you may support its development.
-          </Text>
-
-          <Text style={styles.supportInfo}>
-            Moniepoint
-            {"\n"}Account Number: 8086976247
-          </Text>
-        </View>
-
-        {/* Final Footer with Psalm */}
-        <Text style={styles.footer}>
-          &quot;Teach us to number our days, that we may apply our hearts unto
-          wisdom.&quot;
-          {"\n"}— Psalm 90:12{"\n\n"}
-          Kairos exists to serve, not to impress.
-        </Text>
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
 
       <Navbar />
 
@@ -258,7 +261,7 @@ const styles = StyleSheet.create({
   actionBtn: {
     backgroundColor: "transparent",
     paddingVertical: scale(14),
-    paddingHorizontal: 18,
+    paddingHorizontal: scale(18),
     borderRadius: 22,
     marginBottom: 12,
     borderWidth: 2,

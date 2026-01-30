@@ -6,6 +6,16 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
+// Responsive helpers
+const isSmallDevice = width < 375;
+const isTablet = width >= 768;
+
+const scale = (size: number) => {
+  if (isTablet) return size * 1.2;
+  if (isSmallDevice) return size * 0.9;
+  return size;
+};
+
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
@@ -36,14 +46,14 @@ export default function Navbar() {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          paddingHorizontal: 14,
-          height: 70,
+          paddingHorizontal: scale(14),
+          height: scale(70),
         }}
       >
         {tabs.map(({ label, icon: Icon, route, isMain }) => {
           const isActive = pathname === route;
 
-          // 🔥 ALTAR — CENTER, RAISED, GLOWING GOLD
+          // ALTAR — CENTER, RAISED, GLOWING GOLD
           if (isMain) {
             return (
               <TouchableOpacity
@@ -53,15 +63,15 @@ export default function Navbar() {
                 style={{
                   flex: 1,
                   alignItems: "center",
-                  marginTop: -34,
+                  marginTop: scale(-34),
                 }}
               >
                 {/* OUTER GLOW */}
                 <View
                   style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 40,
+                    width: scale(80),
+                    height: scale(80),
+                    borderRadius: scale(40),
                     backgroundColor: "rgba(212, 175, 55, 0.3)",
                     justifyContent: "center",
                     alignItems: "center",
@@ -77,9 +87,9 @@ export default function Navbar() {
                 {/* GOLD RING */}
                 <View
                   style={{
-                    width: 70,
-                    height: 70,
-                    borderRadius: 35,
+                    width: scale(70),
+                    height: scale(70),
+                    borderRadius: scale(35),
                     backgroundColor: "#1a0f2e",
                     justifyContent: "center",
                     alignItems: "center",
@@ -90,22 +100,22 @@ export default function Navbar() {
                   {/* PURPLE INNER CORE */}
                   <View
                     style={{
-                      width: 58,
-                      height: 58,
-                      borderRadius: 29,
+                      width: scale(58),
+                      height: scale(58),
+                      borderRadius: scale(29),
                       backgroundColor: "#4C1D95",
                       justifyContent: "center",
                       alignItems: "center",
                     }}
                   >
-                    <Icon size={28} color="#D4AF37" strokeWidth={2.5} />
+                    <Icon size={scale(28)} color="#D4AF37" strokeWidth={2.5} />
                   </View>
                 </View>
 
                 <Text
                   style={{
-                    marginTop: 46,
-                    fontSize: 11,
+                    marginTop: scale(46),
+                    fontSize: scale(11),
                     color: "#D4AF37",
                     fontWeight: "700",
                     letterSpacing: 1,

@@ -5,6 +5,9 @@ import React, { useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,7 +17,17 @@ import {
 } from "react-native";
 import Navbar from "../../components/Navbar";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+
+// Responsive helpers
+const isSmallDevice = width < 375;
+const isTablet = width >= 768;
+
+const scale = (size: number) => {
+  if (isTablet) return size * 1.2;
+  if (isSmallDevice) return size * 0.9;
+  return size;
+};
 
 type ViewMode = "grid" | "stack";
 type EntryTag =
@@ -213,164 +226,173 @@ export default function ScribeScreen() {
       style={styles.container}
       className="pb-16"
     >
-      {!showEditor ? (
-        <>
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Kairos</Text>
-            <View style={styles.headerRight}>
-              <TouchableOpacity
-                onPress={() =>
-                  setViewMode(viewMode === "grid" ? "stack" : "grid")
-                }
-                style={styles.viewToggle}
-              >
-                <Text style={styles.viewToggleText}>
-                  {viewMode === "grid" ? "▦" : "☰"}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={createNewEntry}
-                style={styles.addButton}
-              >
-                <Text style={styles.addButtonText}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <ScrollView
-            contentContainerStyle={[
-              styles.entriesContainer,
-              viewMode === "grid" && styles.entriesGrid,
-            ]}
-          >
-            {entries.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>Your Journal Awaits</Text>
-                <Text style={styles.emptyText}>
-                  Capture what God speaks. Write down instructions, prayers,
-                  dreams, and testimonies.
-                </Text>
-                <Text style={styles.emptySubtext}>Tap the + to begin</Text>
-              </View>
-            ) : (
-              entries.map((entry) => (
+      <SafeAreaView style={{ flex: 1 }}>
+        {!showEditor ? (
+          <>
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>Kairos</Text>
+              <View style={styles.headerRight}>
                 <TouchableOpacity
-                  key={entry.id}
-                  style={[
-                    styles.entryCard,
-                    viewMode === "grid" && styles.entryCardGrid,
-                  ]}
-                  onPress={() => editEntry(entry)}
-                  onLongPress={() => deleteEntry(entry.id)}
+                  onPress={() =>
+                    setViewMode(viewMode === "grid" ? "stack" : "grid")
+                  }
+                  style={styles.viewToggle}
                 >
-                  <View style={styles.entryHeader}>
-                    <View
-                      style={[
-                        styles.entryTag,
-                        { backgroundColor: tagColors[entry.tag] },
-                      ]}
-                    >
-                      <Text style={styles.entryTagText}>
-                        {tagLabels[entry.tag]}
-                      </Text>
-                    </View>
-                    <Text style={styles.entryTimestamp}>
-                      {formatTimestamp(entry.timestamp)}
-                    </Text>
-                  </View>
-
-                  {entry.scriptureRef && (
-                    <Text style={styles.entryScripture}>
-                      {entry.scriptureRef}
-                    </Text>
-                  )}
-
-                  <Text style={styles.entryTitle} numberOfLines={2}>
-                    {entry.title}
-                  </Text>
-                  <Text style={styles.entryContent} numberOfLines={4}>
-                    {entry.content}
+                  <Text style={styles.viewToggleText}>
+                    {viewMode === "grid" ? "▦" : "☰"}
                   </Text>
                 </TouchableOpacity>
-              ))
-            )}
-          </ScrollView>
-        </>
-      ) : (
-        <View style={styles.editorContainer}>
-          <View style={styles.editorHeader}>
-            <TouchableOpacity onPress={saveEntry} style={styles.saveButton}>
-              <Text style={styles.saveButtonText}>Save</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={createNewEntry}
+                  style={styles.addButton}
+                >
+                  <Text style={styles.addButtonText}>+</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
 
-            <TouchableOpacity onPress={exportToPDF} style={styles.exportButton}>
-              <Text style={styles.exportButtonText}>Export PDF</Text>
-            </TouchableOpacity>
-          </View>
+            <ScrollView
+              contentContainerStyle={[
+                styles.entriesContainer,
+                viewMode === "grid" && styles.entriesGrid,
+              ]}
+            >
+              {entries.length === 0 ? (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyTitle}>Your Journal Awaits</Text>
+                  <Text style={styles.emptyText}>
+                    Capture what God speaks. Write down instructions, prayers,
+                    dreams, and testimonies.
+                  </Text>
+                  <Text style={styles.emptySubtext}>Tap the + to begin</Text>
+                </View>
+              ) : (
+                entries.map((entry) => (
+                  <TouchableOpacity
+                    key={entry.id}
+                    style={[
+                      styles.entryCard,
+                      viewMode === "grid" && styles.entryCardGrid,
+                    ]}
+                    onPress={() => editEntry(entry)}
+                    onLongPress={() => deleteEntry(entry.id)}
+                  >
+                    <View style={styles.entryHeader}>
+                      <View
+                        style={[
+                          styles.entryTag,
+                          { backgroundColor: tagColors[entry.tag] },
+                        ]}
+                      >
+                        <Text style={styles.entryTagText}>
+                          {tagLabels[entry.tag]}
+                        </Text>
+                      </View>
+                      <Text style={styles.entryTimestamp}>
+                        {formatTimestamp(entry.timestamp)}
+                      </Text>
+                    </View>
 
-          <TextInput
-            style={styles.titleInput}
-            placeholder="Title (optional)"
-            placeholderTextColor="#BFDBFE"
-            value={title}
-            onChangeText={setTitle}
-          />
+                    {entry.scriptureRef && (
+                      <Text style={styles.entryScripture}>
+                        {entry.scriptureRef}
+                      </Text>
+                    )}
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.tagSelector}
+                    <Text style={styles.entryTitle} numberOfLines={2}>
+                      {entry.title}
+                    </Text>
+                    <Text style={styles.entryContent} numberOfLines={4}>
+                      {entry.content}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              )}
+            </ScrollView>
+          </>
+        ) : (
+          <KeyboardAvoidingView
+            style={styles.editorContainer}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0}
           >
-            {(Object.keys(tagLabels) as EntryTag[]).map((tag) => (
+            <View style={styles.editorHeader}>
+              <TouchableOpacity onPress={saveEntry} style={styles.saveButton}>
+                <Text style={styles.saveButtonText}>Save</Text>
+              </TouchableOpacity>
+
               <TouchableOpacity
-                key={tag}
-                onPress={() => setSelectedTag(tag)}
-                style={[
-                  styles.tagOption,
-                  selectedTag === tag && {
-                    backgroundColor: tagColors[tag],
-                  },
-                ]}
+                onPress={exportToPDF}
+                style={styles.exportButton}
               >
-                <Text
+                <Text style={styles.exportButtonText}>Export PDF</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TextInput
+              style={styles.titleInput}
+              placeholder="Title (optional)"
+              placeholderTextColor="#BFDBFE"
+              value={title}
+              onChangeText={setTitle}
+            />
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.tagSelector}
+            >
+              {(Object.keys(tagLabels) as EntryTag[]).map((tag) => (
+                <TouchableOpacity
+                  key={tag}
+                  onPress={() => setSelectedTag(tag)}
                   style={[
-                    styles.tagOptionText,
-                    selectedTag === tag && styles.tagOptionTextSelected,
+                    styles.tagOption,
+                    selectedTag === tag && {
+                      backgroundColor: tagColors[tag],
+                    },
                   ]}
                 >
-                  {tagLabels[tag]}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+                  <Text
+                    style={[
+                      styles.tagOptionText,
+                      selectedTag === tag && styles.tagOptionTextSelected,
+                    ]}
+                  >
+                    {tagLabels[tag]}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
 
-          <TextInput
-            style={styles.scriptureInput}
-            placeholder="Scripture Reference (e.g., John 3:16)"
-            placeholderTextColor="#BFDBFE"
-            value={scriptureRef}
-            onChangeText={setScriptureRef}
-          />
+            <TextInput
+              style={styles.scriptureInput}
+              placeholder="Scripture Reference (e.g., John 3:16)"
+              placeholderTextColor="#BFDBFE"
+              value={scriptureRef}
+              onChangeText={setScriptureRef}
+            />
 
-          <TextInput
-            style={styles.contentInput}
-            placeholder="Write what the Lord has spoken..."
-            placeholderTextColor="#BFDBFE"
-            value={content}
-            onChangeText={setContent}
-            multiline
-            textAlignVertical="top"
-            autoFocus
-          />
+            <TextInput
+              style={styles.contentInput}
+              placeholder="Write what the Lord has spoken..."
+              placeholderTextColor="#BFDBFE"
+              value={content}
+              onChangeText={setContent}
+              multiline
+              textAlignVertical="top"
+              autoFocus
+            />
 
-          <TouchableOpacity
-            onPress={() => setShowEditor(false)}
-            style={styles.cancelButton}
-          >
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+            <TouchableOpacity
+              onPress={() => setShowEditor(false)}
+              style={styles.cancelButton}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
+        )}
+      </SafeAreaView>
 
       <Navbar />
     </LinearGradient>
@@ -392,7 +414,7 @@ const styles = StyleSheet.create({
   },
 
   headerTitle: {
-    fontSize: 28,
+    fontSize: scale(28),
     fontWeight: "800",
     color: "#FFFFFF",
   },
@@ -434,6 +456,7 @@ const styles = StyleSheet.create({
   entriesContainer: {
     padding: 24,
     paddingBottom: 140,
+    minHeight: height,
   },
 
   entriesGrid: {
@@ -449,7 +472,7 @@ const styles = StyleSheet.create({
   },
 
   emptyTitle: {
-    fontSize: 28,
+    fontSize: scale(28),
     fontWeight: "700",
     color: "#FFFFFF",
     marginBottom: 16,
@@ -457,7 +480,7 @@ const styles = StyleSheet.create({
   },
 
   emptyText: {
-    fontSize: 17,
+    fontSize: scale(17),
     color: "#E5E7EB",
     textAlign: "center",
     lineHeight: 26,
@@ -465,7 +488,7 @@ const styles = StyleSheet.create({
   },
 
   emptySubtext: {
-    fontSize: 15,
+    fontSize: scale(15),
     color: "#BFDBFE",
     textAlign: "center",
   },
@@ -511,21 +534,21 @@ const styles = StyleSheet.create({
   },
 
   entryScripture: {
-    fontSize: 13,
+    fontSize: scale(13),
     color: "#FDE68A",
     fontWeight: "600",
     marginBottom: 8,
   },
 
   entryTitle: {
-    fontSize: 18,
+    fontSize: scale(18),
     fontWeight: "700",
     color: "#FFFFFF",
     marginBottom: 8,
   },
 
   entryContent: {
-    fontSize: 15,
+    fontSize: scale(15),
     color: "#E5E7EB",
     lineHeight: 22,
   },
@@ -535,6 +558,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingHorizontal: 24,
     paddingBottom: 160,
+    minHeight: height,
   },
 
   editorHeader: {
@@ -552,7 +576,7 @@ const styles = StyleSheet.create({
   },
 
   saveButtonText: {
-    fontSize: 17,
+    fontSize: scale(17),
     fontWeight: "700",
     color: "#1E3A8A",
   },
@@ -565,13 +589,13 @@ const styles = StyleSheet.create({
   },
 
   exportButtonText: {
-    fontSize: 15,
+    fontSize: scale(15),
     fontWeight: "600",
     color: "#FFFFFF",
   },
 
   titleInput: {
-    fontSize: 24,
+    fontSize: scale(24),
     fontWeight: "600",
     color: "#FFFFFF",
     marginBottom: 16,
@@ -594,7 +618,7 @@ const styles = StyleSheet.create({
   },
 
   tagOptionText: {
-    fontSize: 13,
+    fontSize: scale(13),
     color: "#BFDBFE",
     fontWeight: "600",
   },
@@ -604,7 +628,7 @@ const styles = StyleSheet.create({
   },
 
   scriptureInput: {
-    fontSize: 15,
+    fontSize: scale(15),
     color: "#FDE68A",
     backgroundColor: "rgba(253,230,138,0.1)",
     borderRadius: 12,
@@ -617,7 +641,7 @@ const styles = StyleSheet.create({
 
   contentInput: {
     flex: 1,
-    fontSize: 17,
+    fontSize: scale(17),
     color: "#FFFFFF",
     lineHeight: 26,
     backgroundColor: "rgba(255,255,255,0.08)",
@@ -634,7 +658,7 @@ const styles = StyleSheet.create({
   },
 
   cancelButtonText: {
-    fontSize: 16,
+    fontSize: scale(16),
     fontWeight: "600",
     color: "#FFFFFF",
   },

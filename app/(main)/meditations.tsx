@@ -1,8 +1,9 @@
 // app/(main)/meditation.tsx
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
   Dimensions,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -60,58 +61,63 @@ export default function MeditationScreen() {
       colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
       style={styles.container}
     >
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.header}>Meditation</Text>
-        <Text style={styles.subtitle}>Feed your soul with God&apos;s Word</Text>
-
-        {/* VERSE OF THE DAY */}
-        <View style={styles.dailyCard}>
-          <Text style={styles.cardLabel}>VERSE OF THE DAY</Text>
-          <Text style={styles.verseText}>{todaysVerse.text}</Text>
-          <Text style={styles.verseRef}>{todaysVerse.ref}</Text>
-        </View>
-
-        {/* DAILY QUOTE */}
-        <View style={styles.quoteCard}>
-          <Text style={styles.cardLabel}>DAILY WISDOM</Text>
-          <Text style={styles.quoteText}>&quot;{todaysQuote.text}&quot;</Text>
-          <Text style={styles.quoteAuthor}>— {todaysQuote.author}</Text>
-        </View>
-
-        {/* DAILY PSALM */}
-        <View style={styles.psalmCard}>
-          <Text style={styles.cardLabel}>TODAY&apos;S PSALM</Text>
-          <Text style={styles.psalmText}>{todaysPsalm.text}</Text>
-          <Text style={styles.psalmRef}>{todaysPsalm.ref}</Text>
-        </View>
-
-        {/* TODAY'S THEME - ONE THEME PER DAY */}
-        <View
-          style={[
-            styles.todaysThemeCard,
-            { borderColor: todaysTheme.color + "80" },
-          ]}
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.cardLabel}>TODAY&apos;S THEME</Text>
-          <View style={styles.themeHeader}>
-            <View
-              style={[styles.themeDot, { backgroundColor: todaysTheme.color }]}
-            />
-            <Text style={styles.todaysThemeTitle}>{todaysTheme.title}</Text>
-          </View>
-          <Text style={styles.verseText}>{todaysThemeVerse.text}</Text>
-          <Text style={styles.verseRef}>{todaysThemeVerse.ref}</Text>
-        </View>
+          <Text style={styles.header}>Meditation</Text>
+          <Text style={styles.subtitle}>
+            Feed your soul with God&apos;s Word
+          </Text>
 
-        {/* ALL THEMES - BROWSE */}
-        {/* <Text style={styles.sectionTitle}>All Themes</Text>
+          {/* VERSE OF THE DAY */}
+          <View style={styles.dailyCard}>
+            <Text style={styles.cardLabel}>VERSE OF THE DAY</Text>
+            <Text style={styles.verseText}>{todaysVerse.text}</Text>
+            <Text style={styles.verseRef}>{todaysVerse.ref}</Text>
+          </View>
+
+          {/* DAILY QUOTE */}
+          <View style={styles.quoteCard}>
+            <Text style={styles.cardLabel}>DAILY WISDOM</Text>
+            <Text style={styles.quoteText}>&quot;{todaysQuote.text}&quot;</Text>
+            <Text style={styles.quoteAuthor}>— {todaysQuote.author}</Text>
+          </View>
+
+          {/* DAILY PSALM */}
+          <View style={styles.psalmCard}>
+            <Text style={styles.cardLabel}>TODAY&apos;S PSALM</Text>
+            <Text style={styles.psalmText}>{todaysPsalm.text}</Text>
+            <Text style={styles.psalmRef}>{todaysPsalm.ref}</Text>
+          </View>
+
+          {/* TODAY'S THEME - ONE THEME PER DAY */}
+          <View
+            style={[
+              styles.todaysThemeCard,
+              { borderColor: todaysTheme.color + "80" },
+            ]}
+          >
+            <Text style={styles.cardLabel}>TODAY&apos;S THEME</Text>
+            <View style={styles.themeHeader}>
+              <View
+                style={[
+                  styles.themeDot,
+                  { backgroundColor: todaysTheme.color },
+                ]}
+              />
+              <Text style={styles.todaysThemeTitle}>{todaysTheme.title}</Text>
+            </View>
+            <Text style={styles.verseText}>{todaysThemeVerse.text}</Text>
+            <Text style={styles.verseRef}>{todaysThemeVerse.ref}</Text>
+          </View>
+
+          {/* ALL THEMES - BROWSE */}
+          {/* <Text style={styles.sectionTitle}>All Themes</Text>
         <Text style={styles.sectionSubtitle}>
           Tap to explore scriptures by theme
-        </Text> */}
-        {/* 
+        </Text> 
         {Object.entries(themes).map(([key, theme]) => (
           <View key={key} style={styles.themeCard}>
             <TouchableOpacity
@@ -142,11 +148,13 @@ export default function MeditationScreen() {
           </View>
         ))} */}
 
-        <Text style={styles.footer}>
-          &quot;Thy word is a lamp unto my feet, and a light unto my path.&quot;
-          {"\n"}— Psalm 119:105
-        </Text>
-      </ScrollView>
+          <Text style={styles.footer}>
+            &quot;Thy word is a lamp unto my feet, and a light unto my
+            path.&quot;
+            {"\n"}— Psalm 119:105 (KJV)
+          </Text>
+        </ScrollView>
+      </SafeAreaView>
 
       <Navbar />
     </LinearGradient>
