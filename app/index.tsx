@@ -16,6 +16,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import {SafeAreaView} from "react-native-safe-area-context";
 
 // Prevent splash from hiding until fonts are ready
 SplashScreen.preventAutoHideAsync();
@@ -76,6 +77,7 @@ export default function SplashScreenComponent() {
 
   return (
     <Animated.View style={[{ flex: 1 }, screenStyle]}>
+      <SafeAreaView style={{flex: 1, backgroundColor: "#1a0f2e"}} >
       <LinearGradient
         colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
         style={{
@@ -156,7 +158,9 @@ export default function SplashScreenComponent() {
             START
           </Text>
         </TouchableOpacity>
+        
       </LinearGradient>
+      </SafeAreaView>
     </Animated.View>
   );
 }

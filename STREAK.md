@@ -68,3 +68,4 @@ version 2::
 Theme switching, voice based prayers and stuff
 custom reminders
 custom weekly prayer meetings that are long(Fridays(tells you to do a vigil or pray at night for at least 1 to 3 hours(warfare and stuff))
+![Alt text](Streak.jpg)
