@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { Cross } from "lucide-react-native";
 import React, { useEffect } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   Easing,
   runOnJS,
@@ -19,6 +19,18 @@ import Animated, {
 
 // Prevent splash from hiding until fonts are ready
 SplashScreen.preventAutoHideAsync();
+
+const { width } = Dimensions.get("window");
+
+// Responsive helper functions
+const isSmallDevice = width < 375;
+const isTablet = width >= 768;
+
+const scale = (size: number) => {
+  if (isTablet) return size * 1.2;
+  if (isSmallDevice) return size * 0.9;
+  return size;
+};
 
 export default function SplashScreenComponent() {
   const router = useRouter();
@@ -82,21 +94,21 @@ export default function SplashScreenComponent() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          padding: 20,
+          padding: scale(20),
         }}
       >
         {/* App Icon */}
         <Animated.View style={iconStyle}>
-          <Cross size={80} color="#FFFFFF" strokeWidth={1.5} />
+          <Cross size={scale(80)} color="#FFFFFF" strokeWidth={1.5} />
         </Animated.View>
 
         {/* App Title */}
         <Text
           style={{
             fontFamily: "Inter_600SemiBold",
-            fontSize: 36,
+            fontSize: scale(36),
             color: "#FFFFFF",
-            marginTop: 20,
+            marginTop: scale(20),
             textAlign: "center",
           }}
         >
@@ -107,11 +119,11 @@ export default function SplashScreenComponent() {
         <Text
           style={{
             fontFamily: "Inter_400Regular",
-            fontSize: 20,
+            fontSize: scale(20),
             color: "#FFFFFF",
             opacity: 0.85,
-            marginTop: 10,
-            marginBottom: 30,
+            marginTop: scale(10),
+            marginBottom: scale(30),
             textAlign: "center",
           }}
         >
@@ -122,10 +134,10 @@ export default function SplashScreenComponent() {
         <Text
           style={{
             fontFamily: "Inter_400Regular",
-            fontSize: 16,
+            fontSize: scale(16),
             color: "#FFFFFF",
             textAlign: "center",
-            lineHeight: 24,
+            lineHeight: scale(24),
             opacity: 0.9,
           }}
         >
@@ -138,17 +150,17 @@ export default function SplashScreenComponent() {
           onPress={handleStart}
           style={{
             position: "absolute",
-            bottom: 60,
+            bottom: scale(60),
             backgroundColor: "#FFFFFF",
-            paddingVertical: 14,
-            paddingHorizontal: 110,
-            borderRadius: 30,
+            paddingVertical: scale(14),
+            paddingHorizontal: scale(110),
+            borderRadius: scale(30),
           }}
         >
           <Text
             style={{
               color: "#5B21B6",
-              fontSize: 16,
+              fontSize: scale(16),
               fontFamily: "Inter_600SemiBold",
               letterSpacing: 1,
             }}

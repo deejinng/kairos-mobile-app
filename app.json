@@ -27,7 +27,8 @@
       "expo-audio",
       "expo-web-browser",
       "expo-video",
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-asset"
     ],
     "android": {
       "package": "com.olateju.kairos",
@@ -35,10 +36,20 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#E6F4FE"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "ios": {
       "supportsTablet": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9a6c6d34-60a6-42ed-9a46-f3364bc882f1"
+      }
     }
   }
 }

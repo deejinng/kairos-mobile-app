@@ -6,6 +6,7 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import React, { useState } from "react";
 import {
   Dimensions,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,7 +15,17 @@ import {
 } from "react-native";
 import Navbar from "../../components/Navbar";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+
+// Responsive helper functions
+const isSmallDevice = width < 375;
+const isTablet = width >= 768;
+
+const scale = (size: number) => {
+  if (isTablet) return size * 1.2;
+  if (isSmallDevice) return size * 0.9;
+  return size;
+};
 
 const prayerHours = [
   {
@@ -220,141 +231,152 @@ export default function WatchScreen() {
       colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.content}>
-        <TouchableOpacity onPress={handleGoBack}>
-          <Text style={styles.back}>← Go Back</Text>
-        </TouchableOpacity>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <TouchableOpacity onPress={handleGoBack}>
+            <Text style={styles.back}>← Go Back</Text>
+          </TouchableOpacity>
 
-        <Text style={styles.header}>The Watch</Text>
-        <Text style={styles.subtitle}>
-          Understanding Prayer & the Sacred Hours
-        </Text>
-
-        {/* VIDEO SECTION */}
-        <View style={styles.videoWrapper}>
-          <VideoView
-            player={player}
-            style={styles.video}
-            allowsPictureInPicture
-          />
-        </View>
-
-        {/* INTRO SECTION */}
-        <View style={styles.introBox}>
-          <Text style={styles.introText}>
-            I will stand upon my watch, and set me upon the tower, and will
-            watch to see what he will say unto me...
+          <Text style={styles.header}>The Watch</Text>
+          <Text style={styles.subtitle}>
+            Understanding Prayer & the Sacred Hours
           </Text>
-          <Text style={styles.scriptureRef}>— Habakkuk 2:1</Text>
-        </View>
 
-        <Text style={styles.sectionTitle}>What Are Prayer Watches?</Text>
-        <Text style={styles.paragraph}>
-          Prayer watches are divinely appointed times throughout the day and
-          night when believers intentionally pause to commune with God. These
-          sacred hours are not about religious ritual—they are about positioning
-          yourself in the place of intimacy and spiritual authority.
-        </Text>
-
-        <Text style={styles.paragraph}>
-          From the Old Testament watchmen on the walls to Jesus praying in the
-          early morning hours, Scripture reveals a pattern: God meets those who
-          watch and wait for Him.
-        </Text>
-
-        {/* THE SACRED HOURS */}
-        <Text style={styles.sectionTitle}>The Sacred Hours</Text>
-        <View style={styles.hoursBox}>
-          <Text style={styles.hoursText}>12am · 3am · 6am · 9am</Text>
-          <Text style={styles.hoursText}>12pm · 3pm · 6pm · 9pm</Text>
-        </View>
-
-        {/* AUDIO PLAYER */}
-        <TouchableOpacity onPress={toggleAudio} style={styles.audioBtn}>
-          <Text style={styles.audioText}>
-            {isPlayingAudio ? "⏸ Pause Prayer Music" : "▶ Play Prayer Music"}
-          </Text>
-        </TouchableOpacity>
-
-        <Text style={styles.paragraph}>
-          These eight watches divide the day into seasons of prayer. Each hour
-          carries its own spiritual significance, from the midnight cry to the
-          evening sacrifice.
-        </Text>
-
-        {/* EACH HOUR DETAILS */}
-        {prayerHours.map((hour) => (
-          <View key={hour.id} style={styles.hourCard}>
-            <TouchableOpacity
-              style={styles.hourHeader}
-              onPress={() =>
-                setExpandedHour(expandedHour === hour.id ? null : hour.id)
-              }
-            >
-              <View style={styles.hourTimeBox}>
-                <Text style={styles.hourTime}>{hour.time}</Text>
-              </View>
-              <View style={styles.hourInfo}>
-                <Text style={styles.hourName}>{hour.name}</Text>
-                <Text style={styles.hourSubtitle}>{hour.subtitle}</Text>
-              </View>
-            </TouchableOpacity>
-
-            {expandedHour === hour.id && (
-              <View style={styles.hourExpanded}>
-                <Text style={styles.expandedLabel}>Scriptural Foundation</Text>
-                {hour.scriptures.map((scripture, idx) => (
-                  <View key={idx} style={styles.scriptureItem}>
-                    <Text style={styles.scriptureVerse}>{scripture.text}</Text>
-                    <Text style={styles.scriptureReference}>
-                      — {scripture.ref}
-                    </Text>
-                  </View>
-                ))}
-
-                <Text style={styles.expandedLabel}>Spiritual Significance</Text>
-                <Text style={styles.expandedText}>{hour.significance}</Text>
-
-                <Text style={styles.expandedLabel}>
-                  Significance in Your Life
-                </Text>
-                <Text style={styles.expandedText}>{hour.lifeImpact}</Text>
-
-                <Text style={styles.expandedLabel}>Benefits</Text>
-                {hour.benefits.map((benefit, idx) => (
-                  <Text key={idx} style={styles.benefitItem}>
-                    • {benefit}
-                  </Text>
-                ))}
-
-                <Text style={styles.expandedLabel}>How to Make It Work</Text>
-                <Text style={styles.expandedText}>{hour.practice}</Text>
-              </View>
-            )}
+          {/* VIDEO SECTION */}
+          <View style={styles.videoWrapper}>
+            <VideoView
+              player={player}
+              style={styles.video}
+              allowsPictureInPicture
+            />
           </View>
-        ))}
 
-        {/* FINAL TRUTH */}
-        <View style={styles.calloutBox}>
-          <Text style={styles.calloutText}>Final Truth</Text>
-          <Text style={styles.calloutSubtext}>
-            Prayer watches do not bind God. They train the believer.
+          {/* INTRO SECTION */}
+          <View style={styles.introBox}>
+            <Text style={styles.introText}>
+              I will stand upon my watch, and set me upon the tower, and will
+              watch to see what he will say unto me...
+            </Text>
+            <Text style={styles.scriptureRef}>— Habakkuk 2:1</Text>
+          </View>
+
+          <Text style={styles.sectionTitle}>What Are Prayer Watches?</Text>
+          <Text style={styles.paragraph}>
+            Prayer watches are divinely appointed times throughout the day and
+            night when believers intentionally pause to commune with God. These
+            sacred hours are not about religious ritual but they are about
+            positioning yourself in the place of intimacy and spiritual
+            authority.
           </Text>
-        </View>
 
-        <Text style={styles.paragraph}>
-          This app exists to help you answer that call. To remind you when the
-          watch begins. To give you scripture as you pray. To help you cultivate
-          a lifestyle of unceasing prayer.
-        </Text>
+          <Text style={styles.paragraph}>
+            From the Old Testament watchmen on the walls to Jesus praying in the
+            early morning hours, Scripture reveals a pattern: God meets those
+            who watch and wait for Him.
+          </Text>
 
-        <TouchableOpacity
-          style={styles.startButton}
-          onPress={() => router.push("/(main)/home")}
-        >
-          <Text style={styles.startButtonText}>START PRAYING</Text>
-        </TouchableOpacity>
-      </ScrollView>
+          {/* THE SACRED HOURS */}
+          <Text style={styles.sectionTitle}>The Sacred Hours</Text>
+          <View style={styles.hoursBox}>
+            <Text style={styles.hoursText}>12am · 3am · 6am · 9am</Text>
+            <Text style={styles.hoursText}>12pm · 3pm · 6pm · 9pm</Text>
+          </View>
+
+          {/* AUDIO PLAYER */}
+          <TouchableOpacity onPress={toggleAudio} style={styles.audioBtn}>
+            <Text style={styles.audioText}>
+              {isPlayingAudio
+                ? "⏸ Pause Prayer Music"
+                : "▶ Play Prayer Music"}
+            </Text>
+          </TouchableOpacity>
+
+          <Text style={styles.paragraph}>
+            These eight watches divide the day into seasons of prayer. Each hour
+            carries its own spiritual significance, from the midnight cry to the
+            evening sacrifice.
+          </Text>
+
+          {/* EACH HOUR DETAILS */}
+          {prayerHours.map((hour) => (
+            <View key={hour.id} style={styles.hourCard}>
+              <TouchableOpacity
+                style={styles.hourHeader}
+                onPress={() =>
+                  setExpandedHour(expandedHour === hour.id ? null : hour.id)
+                }
+              >
+                <View style={styles.hourTimeBox}>
+                  <Text style={styles.hourTime}>{hour.time}</Text>
+                </View>
+                <View style={styles.hourInfo}>
+                  <Text style={styles.hourName}>{hour.name}</Text>
+                  <Text style={styles.hourSubtitle}>{hour.subtitle}</Text>
+                </View>
+              </TouchableOpacity>
+
+              {expandedHour === hour.id && (
+                <View style={styles.hourExpanded}>
+                  <Text style={styles.expandedLabel}>
+                    Scriptural Foundation
+                  </Text>
+                  {hour.scriptures.map((scripture, idx) => (
+                    <View key={idx} style={styles.scriptureItem}>
+                      <Text style={styles.scriptureVerse}>
+                        {scripture.text}
+                      </Text>
+                      <Text style={styles.scriptureReference}>
+                        — {scripture.ref}
+                      </Text>
+                    </View>
+                  ))}
+
+                  <Text style={styles.expandedLabel}>
+                    Spiritual Significance
+                  </Text>
+                  <Text style={styles.expandedText}>{hour.significance}</Text>
+
+                  <Text style={styles.expandedLabel}>
+                    Significance in Your Life
+                  </Text>
+                  <Text style={styles.expandedText}>{hour.lifeImpact}</Text>
+
+                  <Text style={styles.expandedLabel}>Benefits</Text>
+                  {hour.benefits.map((benefit, idx) => (
+                    <Text key={idx} style={styles.benefitItem}>
+                      • {benefit}
+                    </Text>
+                  ))}
+
+                  <Text style={styles.expandedLabel}>How to Make It Work</Text>
+                  <Text style={styles.expandedText}>{hour.practice}</Text>
+                </View>
+              )}
+            </View>
+          ))}
+
+          {/* FINAL TRUTH */}
+          <View style={styles.calloutBox}>
+            <Text style={styles.calloutText}>Final Truth</Text>
+            <Text style={styles.calloutSubtext}>
+              Prayer watches do not bind God. They train the believer.
+            </Text>
+          </View>
+
+          <Text style={styles.paragraph}>
+            This app exists to help you answer that call. To remind you when the
+            watch begins. To give you scripture as you pray. To help you
+            cultivate a lifestyle of unceasing prayer.
+          </Text>
+
+          <TouchableOpacity
+            style={styles.startButton}
+            onPress={() => router.push("/(main)/home")}
+          >
+            <Text style={styles.startButtonText}>START PRAYING</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
 
       <Navbar />
     </LinearGradient>
@@ -364,35 +386,36 @@ export default function WatchScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: {
-    paddingTop: 80,
-    paddingBottom: 140,
-    paddingHorizontal: 24,
+    paddingTop: scale(80),
+    paddingBottom: 180,
+    paddingHorizontal: scale(24),
+    minHeight: height,
   },
 
   back: {
     color: "#D4AF37",
-    fontSize: 16,
-    marginBottom: 20,
+    fontSize: scale(16),
+    marginBottom: scale(20),
     fontWeight: "600",
   },
 
   header: {
-    fontSize: 40,
+    fontSize: scale(40),
     fontWeight: "700",
     color: "#FFFFFF",
-    marginBottom: 8,
+    marginBottom: scale(8),
     letterSpacing: 1,
   },
 
   subtitle: {
-    fontSize: 18,
+    fontSize: scale(18),
     color: "rgba(255, 255, 255, 0.7)",
-    marginBottom: 24,
+    marginBottom: scale(24),
   },
 
   videoWrapper: {
-    marginBottom: 30,
-    borderRadius: 20,
+    marginBottom: scale(30),
+    borderRadius: scale(20),
     overflow: "hidden",
     backgroundColor: "rgba(0,0,0,0.4)",
     borderWidth: 1,
@@ -401,90 +424,90 @@ const styles = StyleSheet.create({
 
   video: {
     width: width * 0.88,
-    height: 220,
+    height: scale(220),
     alignSelf: "center",
   },
 
   introBox: {
     backgroundColor: "rgba(255,255,255,0.08)",
-    padding: 24,
-    borderRadius: 20,
-    marginBottom: 30,
+    padding: scale(24),
+    borderRadius: scale(20),
+    marginBottom: scale(30),
     borderWidth: 1,
     borderColor: "rgba(212, 175, 55, 0.2)",
   },
 
   introText: {
-    fontSize: 18,
+    fontSize: scale(18),
     color: "#FFFFFF",
     fontStyle: "italic",
-    lineHeight: 28,
+    lineHeight: scale(28),
     textAlign: "center",
   },
 
   scriptureRef: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: "#D4AF37",
     textAlign: "center",
-    marginTop: 12,
+    marginTop: scale(12),
     letterSpacing: 1,
   },
 
   sectionTitle: {
-    fontSize: 26,
+    fontSize: scale(26),
     fontWeight: "600",
     color: "#FFFFFF",
-    marginTop: 30,
-    marginBottom: 16,
+    marginTop: scale(30),
+    marginBottom: scale(16),
   },
 
   paragraph: {
-    fontSize: 17,
+    fontSize: scale(17),
     color: "rgba(255, 255, 255, 0.85)",
-    lineHeight: 28,
-    marginBottom: 16,
+    lineHeight: scale(28),
+    marginBottom: scale(16),
   },
 
   hoursBox: {
     backgroundColor: "rgba(212, 175, 55, 0.1)",
-    padding: 20,
-    borderRadius: 16,
-    marginVertical: 20,
+    padding: scale(20),
+    borderRadius: scale(16),
+    marginVertical: scale(20),
     borderWidth: 1,
     borderColor: "rgba(212, 175, 55, 0.3)",
   },
 
   hoursText: {
-    fontSize: 19,
+    fontSize: scale(19),
     color: "#D4AF37",
     fontWeight: "600",
     textAlign: "center",
-    marginVertical: 4,
+    marginVertical: scale(4),
     letterSpacing: 1,
   },
 
   audioBtn: {
     backgroundColor: "rgba(212, 175, 55, 0.15)",
-    padding: 18,
-    borderRadius: 28,
+    padding: scale(18),
+    borderRadius: scale(28),
     alignItems: "center",
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: scale(20),
+    marginBottom: scale(20),
     borderWidth: 1,
     borderColor: "#D4AF37",
   },
 
   audioText: {
     color: "#D4AF37",
-    fontSize: 16,
+    fontSize: scale(16),
     fontWeight: "700",
     letterSpacing: 1,
   },
 
   hourCard: {
     backgroundColor: "rgba(255,255,255,0.08)",
-    borderRadius: 20,
-    marginBottom: 16,
+    borderRadius: scale(20),
+    marginBottom: scale(16),
     overflow: "hidden",
     borderWidth: 1,
     borderColor: "rgba(212, 175, 55, 0.2)",
@@ -493,23 +516,23 @@ const styles = StyleSheet.create({
   hourHeader: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
+    padding: scale(16),
   },
 
   hourTimeBox: {
-    width: 80,
-    height: 80,
-    borderRadius: 16,
+    width: scale(80),
+    height: scale(80),
+    borderRadius: scale(16),
     backgroundColor: "rgba(212, 175, 55, 0.2)",
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 14,
+    marginRight: scale(14),
     borderWidth: 1,
     borderColor: "#D4AF37",
   },
 
   hourTime: {
-    fontSize: 16,
+    fontSize: scale(16),
     fontWeight: "700",
     color: "#D4AF37",
     textAlign: "center",
@@ -520,101 +543,102 @@ const styles = StyleSheet.create({
   },
 
   hourName: {
-    fontSize: 18,
+    fontSize: scale(18),
     fontWeight: "700",
     color: "#FFFFFF",
-    marginBottom: 4,
+    marginBottom: scale(4),
   },
 
   hourSubtitle: {
-    fontSize: 14,
+    fontSize: scale(14),
     color: "rgba(255, 255, 255, 0.6)",
   },
 
   hourExpanded: {
-    padding: 20,
+    padding: scale(20),
     paddingTop: 0,
   },
 
   expandedLabel: {
-    fontSize: 16,
+    fontSize: scale(16),
     fontWeight: "700",
     color: "#D4AF37",
-    marginTop: 16,
-    marginBottom: 8,
+    marginTop: scale(16),
+    marginBottom: scale(8),
     letterSpacing: 0.5,
   },
 
   expandedText: {
-    fontSize: 15,
+    fontSize: scale(15),
     color: "rgba(255, 255, 255, 0.85)",
-    lineHeight: 24,
-    marginBottom: 12,
+    lineHeight: scale(24),
+    marginBottom: scale(12),
   },
 
   scriptureItem: {
-    marginBottom: 12,
+    marginBottom: scale(12),
   },
 
   scriptureVerse: {
-    fontSize: 15,
+    fontSize: scale(15),
     color: "#FFFFFF",
     fontStyle: "italic",
-    lineHeight: 24,
-    marginBottom: 4,
+    lineHeight: scale(24),
+    marginBottom: scale(4),
   },
 
   scriptureReference: {
-    fontSize: 13,
+    fontSize: scale(13),
     color: "#D4AF37",
   },
 
   benefitItem: {
-    fontSize: 15,
+    fontSize: scale(15),
     color: "rgba(255, 255, 255, 0.85)",
-    lineHeight: 24,
-    marginBottom: 4,
+    lineHeight: scale(24),
+    marginBottom: scale(4),
   },
 
   calloutBox: {
     backgroundColor: "rgba(212, 175, 55, 0.15)",
-    padding: 24,
-    borderRadius: 20,
-    marginVertical: 24,
+    padding: scale(24),
+    borderRadius: scale(20),
+    marginVertical: scale(24),
     borderLeftWidth: 4,
     borderLeftColor: "#D4AF37",
   },
 
   calloutText: {
-    fontSize: 22,
+    fontSize: scale(22),
     fontWeight: "700",
     color: "#D4AF37",
-    marginBottom: 8,
+    marginBottom: scale(8),
     textAlign: "center",
   },
 
   calloutSubtext: {
-    fontSize: 17,
+    fontSize: scale(17),
     color: "#FFFFFF",
     textAlign: "center",
-    lineHeight: 26,
+    lineHeight: scale(26),
   },
 
   startButton: {
     backgroundColor: "transparent",
-    paddingVertical: 18,
-    borderRadius: 34,
+    paddingVertical: scale(18),
+    borderRadius: scale(34),
     alignItems: "center",
-    marginTop: 30,
-    marginBottom: 20,
+    marginTop: scale(30),
+    marginBottom: scale(20),
     borderWidth: 2,
     borderColor: "#D4AF37",
   },
 
   startButtonText: {
     color: "#D4AF37",
-    fontSize: 18,
+    fontSize: scale(18),
     fontWeight: "700",
     letterSpacing: 2,
+    // paddingBottom:
   },
 });
