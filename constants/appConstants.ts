@@ -1,17 +1,17 @@
 // Color interface
-export const colors = {
+export const COLORS = {
   primary: "#5B21B6",
-  secondary: "#FFF",
+  secondary: "#2d1b4e",
+  background: "#000",
   text: "#FFF",
+  border: "#555",
+  borderSecondary: "#333",
+  textSecondary: "#999",
 } as const;
 
-export type COLORS = typeof colors;
-
-export const dimensions = {
+export const DIMENSIONS = {
   smallDeviceWidth: 375,
   tabletWidth: 768,
   scaleTablet: 1.2,
   scaleSmall: 0.9,
 } as const;
-
-export type DIMENSIONS = typeof dimensions;

@@ -16,8 +16,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import {SafeAreaView} from "react-native-safe-area-context";
-//import {COLORS, DIMENSIONS} from "@/constants/appConstants"
+import { SafeAreaView } from "react-native-safe-area-context";
+
 // Prevent splash from hiding until fonts are ready
 SplashScreen.preventAutoHideAsync();
 
@@ -77,7 +77,7 @@ export default function SplashScreenComponent() {
       { duration: 500, easing: Easing.inOut(Easing.ease) },
       () => {
         // Navigate only after animation finishes
-        runOnJS(() => router.push("/_sitemap"));
+        runOnJS(router.replace)("/(main)/home");
       },
     );
   };
@@ -89,89 +89,88 @@ export default function SplashScreenComponent() {
 
   return (
     <Animated.View style={[{ flex: 1 }, screenStyle]}>
-      <SafeAreaView style={{flex: 1, backgroundColor: "#1a0f2e"}} >
-      <LinearGradient
-        colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          padding: scale(20),
-        }}
-      >
-        {/* App Icon */}
-        <Animated.View style={iconStyle}>
-          <Cross size={scale(80)} color="#FFFFFF" strokeWidth={1.5} />
-        </Animated.View>
-
-        {/* App Title */}
-        <Text
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#1a0f2e" }}>
+        <LinearGradient
+          colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
           style={{
-            fontFamily: "Inter_600SemiBold",
-            fontSize: scale(36),
-            color: "#FFFFFF",
-            marginTop: scale(20),
-            textAlign: "center",
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: scale(20),
           }}
         >
-          Kairos
-        </Text>
+          {/* App Icon */}
+          <Animated.View style={iconStyle}>
+            <Cross size={scale(80)} color="#FFFFFF" strokeWidth={1.5} />
+          </Animated.View>
 
-        {/* Subtitle */}
-        <Text
-          style={{
-            fontFamily: "Inter_400Regular",
-            fontSize: scale(20),
-            color: "#FFFFFF",
-            opacity: 0.85,
-            marginTop: scale(10),
-            marginBottom: scale(30),
-            textAlign: "center",
-          }}
-        >
-          Seek your Father in prayer. He hears you.
-        </Text>
-
-        {/* Scripture */}
-        <Text
-          style={{
-            fontFamily: "Inter_400Regular",
-            fontSize: scale(16),
-            color: "#FFFFFF",
-            textAlign: "center",
-            lineHeight: scale(24),
-            opacity: 0.9,
-          }}
-        >
-          &quot;Men ought always to pray, and not to faint.&quot;{"\n"}– Luke
-          18:1 (KJV)
-        </Text>
-
-        {/* Start Button */}
-        <TouchableOpacity
-          onPress={handleStart}
-          style={{
-            position: "absolute",
-            bottom: scale(60),
-            backgroundColor: "#FFFFFF",
-            paddingVertical: scale(14),
-            paddingHorizontal: scale(110),
-            borderRadius: scale(30),
-          }}
-        >
+          {/* App Title */}
           <Text
             style={{
-              color: "#5B21B6",
-              fontSize: scale(16),
               fontFamily: "Inter_600SemiBold",
-              letterSpacing: 1,
+              fontSize: scale(36),
+              color: "#FFFFFF",
+              marginTop: scale(20),
+              textAlign: "center",
             }}
           >
-            START
+            Kairos
           </Text>
-        </TouchableOpacity>
-        
-      </LinearGradient>
+
+          {/* Subtitle */}
+          <Text
+            style={{
+              fontFamily: "Inter_400Regular",
+              fontSize: scale(20),
+              color: "#FFFFFF",
+              opacity: 0.85,
+              marginTop: scale(10),
+              marginBottom: scale(30),
+              textAlign: "center",
+            }}
+          >
+            Seek your Father in prayer. He hears you.
+          </Text>
+
+          {/* Scripture */}
+          <Text
+            style={{
+              fontFamily: "Inter_400Regular",
+              fontSize: scale(16),
+              color: "#FFFFFF",
+              textAlign: "center",
+              lineHeight: scale(24),
+              opacity: 0.9,
+            }}
+          >
+            &quot;Men ought always to pray, and not to faint.&quot;{"\n"}– Luke
+            18:1 (KJV)
+          </Text>
+
+          {/* Start Button */}
+          <TouchableOpacity
+            onPress={handleStart}
+            style={{
+              position: "absolute",
+              bottom: scale(60),
+              backgroundColor: "#FFFFFF",
+              paddingVertical: scale(14),
+              paddingHorizontal: scale(110),
+              borderRadius: scale(30),
+            }}
+          >
+            <Text
+              style={{
+                color: "#5B21B6",
+                fontSize: scale(16),
+                fontFamily: "Inter_600SemiBold",
+                letterSpacing: 1,
+              }}
+            >
+              START
+            </Text>
+          </TouchableOpacity>
+        </LinearGradient>
       </SafeAreaView>
     </Animated.View>
   );

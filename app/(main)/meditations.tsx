@@ -17,6 +17,7 @@ import { dailyPsalms } from "../../constants/daily-psalms";
 import { dailyVerses } from "../../constants/daily-verses";
 import { dailyQuotes } from "../../constants/spiritual-quotes";
 import { themes } from "../../constants/themes";
+import type { Themes } from "../../constants/themes";
 
 const { width, height } = Dimensions.get("window");
 
@@ -48,13 +49,20 @@ export default function MeditationScreen() {
   const todaysPsalm = dailyPsalms[dayOfYear % dailyPsalms.length];
 
   // TODAY'S THEME - picks ONE theme per day
-  const themeKeys = Object.keys(themes);
-  const todaysThemeKey = themeKeys[dayOfYear % themeKeys.length];
-  const todaysTheme = themes[todaysThemeKey as keyof typeof themes];
-  const todaysThemeVerse =
-    todaysTheme.verses[
-      Math.floor(dayOfYear / themeKeys.length) % todaysTheme.verses.length
-    ];
+  const { todaysTheme, todaysThemeVerse } = useMemo(() => {
+    const themeKeys = Object.keys(themes) as Array<keyof Themes>;
+    const todaysThemeKey = themeKeys[dayOfYear % themeKeys.length];
+    const theme = themes[todaysThemeKey];
+    const verse =
+      theme.verses[
+        Math.floor(dayOfYear / themeKeys.length) % theme.verses.length
+      ];
+
+    return {
+      todaysTheme: theme,
+      todaysThemeVerse: verse,
+    };
+  }, [dayOfYear]);
 
   return (
     <LinearGradient
@@ -117,7 +125,7 @@ export default function MeditationScreen() {
           {/* <Text style={styles.sectionTitle}>All Themes</Text>
         <Text style={styles.sectionSubtitle}>
           Tap to explore scriptures by theme
-        </Text> 
+        </Text>
         {Object.entries(themes).map(([key, theme]) => (
           <View key={key} style={styles.themeCard}>
             <TouchableOpacity
