@@ -39,6 +39,8 @@
       "edgeToEdgeEnabled": true,
       "permissions": [
         "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
@@ -50,6 +52,12 @@
       "eas": {
         "projectId": "15ca11d1-3c9f-4f76-a5ee-4e8497002b09"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/15ca11d1-3c9f-4f76-a5ee-4e8497002b09"
     }
   }
 }
