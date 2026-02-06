@@ -19,7 +19,7 @@ import {
 import Navbar from "../../components/Navbar";
 import { PrayerTimer } from "../../components/PrayerTimer";
 import { SacredHourDisplay } from "../../components/SacredHourDisplay";
-//import { COLORS, DIMENSIONS } from "../../constants/appConstants";
+import { COLORS, DIMENSIONS } from "@/constants/appConstants";
 import { usePrayerState, ViewState } from "../../hooks/usePrayerState";
 
 // Configure notification handler - IMPORTANT: Th is controls what happens when notification arrives

@@ -17,7 +17,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import {SafeAreaView} from "react-native-safe-area-context";
-
+//import {COLORS, DIMENSIONS} from "@/constants/appConstants"
 // Prevent splash from hiding until fonts are ready
 SplashScreen.preventAutoHideAsync();
 
@@ -77,7 +77,7 @@ export default function SplashScreenComponent() {
       { duration: 500, easing: Easing.inOut(Easing.ease) },
       () => {
         // Navigate only after animation finishes
-        runOnJS(router.replace)("/(main)/home");
+        runOnJS(() => router.push("/_sitemap"));
       },
     );
   };
