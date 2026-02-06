@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { COLORS, DIMENSIONS } from "../constants/appConstants";
+//import { COLORS, DIMENSIONS } from "../constants/appConstants";
 
 interface PrayerTimerProps {
   minutes: number;
