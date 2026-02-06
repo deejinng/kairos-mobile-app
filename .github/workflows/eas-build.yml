@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - jinng/workarounds
+      - jinng/workaround
 jobs:
   build:
     name: Install and build
