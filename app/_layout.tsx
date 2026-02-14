@@ -1,13 +1,16 @@
 import {
   useFonts,
-  Poppins_400Regular,
-  Poppins_700Bold,
-} from "@expo-google-fonts/poppins";
+  Inter_400Regular,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from "@expo-google-fonts/inter";
+
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import BackgroundGradient from "@/components/BackgroundGradient";
+import { FONTS } from "@/constants/appConstants";
 import "../global.css"; // Keep if you're using Tailwind/NativeWind
 
 // Prevent splash from auto-hiding (do this outside the component)
@@ -15,9 +18,9 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    PoppinsRegular: Poppins_400Regular,
-    PoppinsBold: Poppins_700Bold,
-    // Add more fonts here if needed
+    [FONTS.regular]: Inter_400Regular,
+    [FONTS.semibold]: Inter_600SemiBold,
+    [FONTS.bold]: Inter_700Bold,
   });
 
   useEffect(() => {

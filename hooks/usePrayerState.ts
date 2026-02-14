@@ -6,9 +6,10 @@ export type ViewState = "altar" | "selectDuration" | "praying";
 export interface PrayerState {
   view: ViewState;
   duration: number | null;
-  startTime: number | null;
+  prayerStartTime: number | null;     // ← changed from startTime
   remaining: number;
   savedAt: number;
+  // Removed the duplicate prayerStartTime you had at the bottom
 }
 
 export const usePrayerState = () => {
@@ -16,14 +17,14 @@ export const usePrayerState = () => {
     async (
       currentView: ViewState,
       currentDuration: number | null,
-      startTime: number | null,
+      prayerStartTime: number | null,          // ← renamed
       currentRemaining: number,
     ) => {
       try {
         const state: PrayerState = {
           view: currentView,
           duration: currentDuration,
-          startTime,
+          prayerStartTime,                         // ← renamed
           remaining: currentRemaining,
           savedAt: Date.now(),
         };

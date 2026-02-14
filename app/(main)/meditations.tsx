@@ -117,7 +117,7 @@ export default function MeditationScreen() {
           {/* <Text style={styles.sectionTitle}>All Themes</Text>
         <Text style={styles.sectionSubtitle}>
           Tap to explore scriptures by theme
-        </Text> 
+        </Text>
         {Object.entries(themes).map(([key, theme]) => (
           <View key={key} style={styles.themeCard}>
             <TouchableOpacity
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: scale(34),
     fontWeight: "700",
-    color: "#FFFFFF",
+    color: "#D4AF37",
     marginBottom: 8,
     textAlign: "center",
     letterSpacing: 1,

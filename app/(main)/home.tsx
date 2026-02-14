@@ -1,7 +1,7 @@
-import { Audio } from "expo-av";
+// app/(main)/home.tsx
 import { LinearGradient } from "expo-linear-gradient";
 import * as Notifications from "expo-notifications";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import {
   Animated,
   AppState,
@@ -15,14 +15,15 @@ import {
   TouchableOpacity,
   Vibration,
   View,
+  AppStateStatus,
 } from "react-native";
 import Navbar from "../../components/Navbar";
 import { PrayerTimer } from "../../components/PrayerTimer";
 import { SacredHourDisplay } from "../../components/SacredHourDisplay";
-import { COLORS, DIMENSIONS } from "../../constants/appConstants";
+import { COLORS } from "../../constants/appConstants";
 import { usePrayerState, ViewState } from "../../hooks/usePrayerState";
 
-// Configure notification handler - IMPORTANT: Th is controls what happens when notification arrives
+// Configure notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowBanner: true,
@@ -34,63 +35,82 @@ Notifications.setNotificationHandler({
 
 const { width, height } = Dimensions.get("window");
 
-// Responsive helpers
-const isSmallDevice = width < DIMENSIONS.smallDeviceWidth;
-const isTablet = width >= DIMENSIONS.tabletWidth;
-
-const scale = (size: number) => {
-  if (isTablet) return size * DIMENSIONS.scaleTablet;
-  if (isSmallDevice) return size * DIMENSIONS.scaleSmall;
-  return size;
-};
-
 const prayerHours = [
-  { hour: 0, name: "The Midnight Hour", subtitle: "MATINS • NIGHT PRAYER" },
-  { hour: 3, name: "The Third Hour", subtitle: "LAUDS • MORNING WATCH" },
+  { hour: 0, name: "The Midnight Hour", subtitle: "WARFARE • NIGHT PRAYER" },
+  { hour: 3, name: "The Third Hour", subtitle: "REVELATION • MORNING WATCH" },
   { hour: 6, name: "The Sixth Hour", subtitle: "PRIME • DAWN SACRIFICE" },
   { hour: 9, name: "The Ninth Hour", subtitle: "TERCE • THIRD HOUR" },
   { hour: 12, name: "The Twelfth Hour", subtitle: "SEXT • MIDDAY PRAYER" },
-  { hour: 15, name: "The Fifteenth Hour", subtitle: "NONE • AFTERNOON" },
+  { hour: 15, name: "The Ninth Hour", subtitle: "HOUR OF MERCY • AFTERNOON" },
   {
     hour: 18,
-    name: "The Eighteenth Hour",
+    name: "The Twelfth Hour",
     subtitle: "VESPERS • EVENING SACRIFICE",
   },
   {
     hour: 21,
-    name: "The Twenty-First Hour",
+    name: "The Third Hour",
     subtitle: "COMPLINE • NIGHT PRAYER",
   },
 ];
 
 const prayerScriptures = [
-  { ref: "1 Thessalonians 5:17", text: '"Pray without ceasing."' },
+  { ref: "1 Thessalonians 5:17", text: "Pray without ceasing." },
   {
     ref: "Jeremiah 29:13",
-    text: '"Ye shall seek me, and find me, when ye shall search for me with all your heart."',
+    text: "Ye shall seek me, and find me, when ye shall search for me with all your heart.",
   },
   {
     ref: "Philippians 4:6",
-    text: '"In every thing by prayer and supplication with thanksgiving let your requests be made known unto God."',
+    text: "In every thing by prayer and supplication with thanksgiving let your requests be made known unto God.",
   },
   {
     ref: "Matthew 6:14",
-    text: '"For if ye forgive men their trespasses, your heavenly Father will also forgive you."',
+    text: "For if ye forgive men their trespasses, your heavenly Father will also forgive you.",
   },
   {
     ref: "Ephesians 6:18",
-    text: '"Praying always with all prayer and supplication in the Spirit."',
+    text: "Praying always with all prayer and supplication in the Spirit.",
+  },
+  {
+    ref: "Psalm 145:18",
+    text: "The Lord is nigh unto all them that call upon him, to all that call upon him in truth.",
+  },
+  {
+    ref: "James 5:16",
+    text: "The effectual fervent prayer of a righteous man availeth much.",
+  },
+  {
+    ref: "Matthew 21:22",
+    text: "And all things, whatsoever ye shall ask in prayer, believing, ye shall receive.",
   },
 ];
 
-const anchorScripture = {
-  ref: "Luke 18:1",
-  text: '"And he spake a parable unto them to this end, that men ought always to pray, and not to faint;"',
-};
+const anchorScriptures = [
+  {
+    ref: "Luke 18:1",
+    text: "And he spake a parable unto them to this end, that men ought always to pray, and not to faint;",
+  },
+  {
+    ref: "Psalm 55:17",
+    text: "Evening, and morning, and at noon, will I pray, and cry aloud: and he shall hear my voice.",
+  },
+  {
+    ref: "1 Chronicles 16:11",
+    text: "Seek the Lord and his strength, seek his face continually.",
+  },
+  {
+    ref: "Colossians 4:2",
+    text: "Continue in prayer, and watch in the same with thanksgiving.",
+  },
+  {
+    ref: "Romans 12:12",
+    text: "Rejoicing in hope; patient in tribulation; continuing instant in prayer.",
+  },
+];
 
 async function scheduleSacredHourNotifications() {
   try {
-    // Request permissions
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -105,23 +125,20 @@ async function scheduleSacredHourNotifications() {
       return false;
     }
 
-    // Setup notification channel for Android
     if (Platform.OS === "android") {
       await Notifications.setNotificationChannelAsync("prayer-reminders", {
         name: "Sacred Hour Reminders",
-        importance: Notifications.AndroidImportance.MAX, // Changed to MAX for full-screen intent
+        importance: Notifications.AndroidImportance.MAX,
         sound: "default",
-        vibrationPattern: [0, 1000, 500, 1000, 500, 1000, 500, 1000], // 2 minutes of vibration pattern
+        vibrationPattern: [0, 250, 250, 250],
         lightColor: "#D4AF37",
         enableVibrate: true,
         enableLights: true,
       });
     }
 
-    // Cancel any existing notifications first
     await Notifications.cancelAllScheduledNotificationsAsync();
 
-    // Schedule notifications for each sacred hour using DAILY trigger (works on both platforms)
     for (const prayerHour of prayerHours) {
       await Notifications.scheduleNotificationAsync({
         content: {
@@ -134,7 +151,6 @@ async function scheduleSacredHourNotifications() {
             sacredHour: prayerHour.hour,
             prayerName: prayerHour.name,
           },
-          vibrate: [0, 1000, 500, 1000, 500, 1000, 500, 1000], // Vibration pattern
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DAILY,
@@ -144,7 +160,7 @@ async function scheduleSacredHourNotifications() {
       });
     }
 
-    console.log("Daily sacred hour notifications scheduled successfully");
+    console.log("Sacred hour notifications scheduled successfully");
     return true;
   } catch (error) {
     console.error("Notification setup error:", error);
@@ -161,22 +177,48 @@ export default function Home() {
   const [prayerStartTime, setPrayerStartTime] = useState<number | null>(null);
 
   const pulseAnim = useState(new Animated.Value(1))[0];
-
-  const soundRef = useRef<Audio.Sound | null>(null);
-  const [notificationAudioActive, setNotificationAudioActive] = useState(false);
-  const vibrationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const appState = useRef<AppStateStatus>(AppState.currentState);
 
   const { savePrayerState, loadPrayerState, clearPrayerState } =
     usePrayerState();
 
-  // Load saved state on mount
+  // Pick random anchor scripture on mount
+  const anchorScripture = useMemo(() => {
+    return anchorScriptures[
+      Math.floor(Math.random() * anchorScriptures.length)
+    ];
+  }, []);
+
+  // Load saved prayer state on mount
   useEffect(() => {
-    loadPrayerState();
+    const restoreState = async () => {
+      const restored = await loadPrayerState();
+      if (restored) {
+        setView(restored.view);
+        setDuration(restored.duration);
+        setPrayerStartTime(restored.prayerStartTime);
+
+        // Recalculate remaining time based on elapsed time
+        if (restored.prayerStartTime) {
+          const elapsed = Math.floor(
+            (Date.now() - restored.prayerStartTime) / 1000,
+          );
+          if (restored.duration) {
+            // Timed prayer
+            setRemaining(Math.max(0, restored.duration - elapsed));
+          } else {
+            // Open-ended prayer
+            setRemaining(elapsed);
+          }
+        }
+      }
+    };
+    restoreState();
   }, [loadPrayerState]);
 
   // Save state whenever prayer session changes
   useEffect(() => {
-    if (view === "praying") {
+    if (view === "praying" && prayerStartTime) {
       savePrayerState(view, duration, prayerStartTime, remaining);
     }
   }, [view, duration, remaining, prayerStartTime, savePrayerState]);
@@ -184,37 +226,50 @@ export default function Home() {
   // Handle app state changes (background/foreground)
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
-      if (nextAppState === "active") {
-        // App came to foreground - reload prayer state
-        loadPrayerState();
-        // Stop any ongoing vibration when app opens
+      // App coming to foreground
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        // Recalculate remaining time based on actual elapsed time
+        if (view === "praying" && prayerStartTime) {
+          const elapsed = Math.floor((Date.now() - prayerStartTime) / 1000);
+          if (duration) {
+            // Timed prayer - count down
+            setRemaining(Math.max(0, duration - elapsed));
+          } else {
+            // Open-ended prayer - count up
+            setRemaining(elapsed);
+          }
+        }
+
+        // Stop any ongoing vibration
         if (Platform.OS === "android") {
           Vibration.cancel();
         }
-      } else if (nextAppState.match(/inactive|background/)) {
-        // App going to background - save current state
-        if (view === "praying") {
+      }
+      // App going to background
+      else if (
+        appState.current === "active" &&
+        nextAppState.match(/inactive|background/)
+      ) {
+        if (view === "praying" && prayerStartTime) {
           savePrayerState(view, duration, prayerStartTime, remaining);
         }
       }
+
+      appState.current = nextAppState;
     });
 
     return () => {
       subscription.remove();
     };
-  }, [
-    view,
-    duration,
-    remaining,
-    prayerStartTime,
-    loadPrayerState,
-    savePrayerState,
-  ]);
+  }, [view, duration, remaining, prayerStartTime, savePrayerState]);
 
-  // Live clock
+  // Live clock - updates every second
   useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(t);
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
   }, []);
 
   // Setup notifications on mount
@@ -222,108 +277,31 @@ export default function Home() {
     scheduleSacredHourNotifications();
   }, []);
 
-  // Load sound
+  // Prayer timer - handles both timed and open-ended prayer
   useEffect(() => {
-    const loadSound = async () => {
-      const sound = new Audio.Sound();
-      try {
-        await sound.loadAsync(require("../../assets/audio/song.mp3"));
-        soundRef.current = sound;
-      } catch (error) {
-        console.error("Failed to load sound", error);
+    if (view !== "praying" || !prayerStartTime) return;
+
+    const interval = setInterval(() => {
+      if (duration) {
+        // Timed prayer - count down
+        setRemaining((r) => Math.max(0, r - 1));
+      } else {
+        // Open-ended prayer - count up
+        setRemaining((r) => r + 1);
       }
-    };
-    loadSound();
-
-    return () => {
-      soundRef.current?.unloadAsync();
-    };
-  }, []);
-
-  // Handle notification responses (when user taps notification)
-  useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(
-      async (response) => {
-        console.log("Notification tapped:", response);
-
-        // Stop any currently playing notification audio
-        if (soundRef.current && notificationAudioActive) {
-          await soundRef.current.stopAsync();
-          setNotificationAudioActive(false);
-        }
-
-        // Stop vibration
-        if (Platform.OS === "android") {
-          Vibration.cancel();
-        }
-
-        if (vibrationTimeoutRef.current) {
-          clearTimeout(vibrationTimeoutRef.current);
-          vibrationTimeoutRef.current = null;
-        }
-      },
-    );
-
-    return () => subscription.remove();
-  }, [notificationAudioActive]);
-
-  // Handle notification received (when notification triggers)
-  useEffect(() => {
-    const subscription = Notifications.addNotificationReceivedListener(
-      async (notification) => {
-        console.log("Notification received:", notification);
-
-        const currentHour = new Date().getHours();
-        const isSacred = prayerHours.some((ph) => ph.hour === currentHour);
-
-        if (isSacred && !notificationAudioActive) {
-          // Start vibration for 2 minutes
-          if (Platform.OS === "android") {
-            const pattern = [0, 1000, 500, 1000, 500, 1000, 500, 1000];
-            Vibration.vibrate(pattern, true); // Repeat pattern
-
-            // Stop after 2 minutes
-            vibrationTimeoutRef.current = setTimeout(() => {
-              Vibration.cancel();
-            }, 120000);
-          }
-
-          // Start playing audio for 2 minutes
-          const sound = soundRef.current;
-          if (sound) {
-            setNotificationAudioActive(true);
-            await sound.setIsLoopingAsync(true);
-            await sound.playAsync();
-
-            // Stop after 2 minutes
-            setTimeout(async () => {
-              await sound.stopAsync();
-              setNotificationAudioActive(false);
-            }, 120000); // 2 minutes
-          }
-        }
-      },
-    );
-
-    return () => subscription.remove();
-  }, [notificationAudioActive]);
-
-  // Prayer timer
-  useEffect(() => {
-    if (view !== "praying") return;
-    const timer = setInterval(() => {
-      setRemaining((r) => (duration ? r - 1 : r + 1));
     }, 1000);
-    return () => clearInterval(timer);
-  }, [view, duration]);
 
-  // Auto-finish timed prayer
+    return () => clearInterval(interval);
+  }, [view, duration, prayerStartTime]);
+
+  // Auto-finish timed prayer when time runs out
   useEffect(() => {
     if (duration && remaining <= 0 && view === "praying") {
       setShowModal(true);
     }
   }, [remaining, duration, view]);
 
+  // Determine greeting based on time of day
   const greeting = useMemo(() => {
     const h = now.getHours();
     if (h >= 0 && h < 6) return "Good Evening";
@@ -332,12 +310,13 @@ export default function Home() {
     return "Good Evening";
   }, [now]);
 
+  // Check if current hour is a sacred hour
   const currentSacredHour = useMemo(() => {
     const h = now.getHours();
     return prayerHours.find((ph) => ph.hour === h);
   }, [now]);
 
-  // Pulse when sacred hour
+  // Pulse animation for sacred hour indicator
   useEffect(() => {
     let loop: Animated.CompositeAnimation | null = null;
 
@@ -364,17 +343,48 @@ export default function Home() {
     return () => loop?.stop();
   }, [currentSacredHour, pulseAnim]);
 
+  // Rotate scripture every 2 minutes during prayer
   const activeScripture = useMemo(() => {
     const index =
       Math.floor(Math.abs(remaining) / 120) % prayerScriptures.length;
     return prayerScriptures[index];
   }, [remaining]);
 
+  // Can only finish prayer if: open-ended OR timed prayer has completed
   const canFinishPrayer =
     duration === null || (duration !== null && remaining <= 0);
 
   const minutes = Math.floor(Math.abs(remaining) / 60);
   const seconds = Math.abs(remaining) % 60;
+
+  const handleStartPraying = () => {
+    const startTime = Date.now();
+    setRemaining(duration ?? 0);
+    setPrayerStartTime(startTime);
+    setView("praying");
+    savePrayerState("praying", duration, startTime, duration ? 0 : 0);
+  };
+
+  const handleFinishPrayer = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setView("altar");
+    setPrayerStartTime(null);
+    setDuration(null);
+    setRemaining(0);
+    clearPrayerState();
+  };
+
+  const handleBackToAltar = () => {
+    setView("altar");
+    setPrayerStartTime(null);
+    setDuration(null);
+    setRemaining(0);
+    clearPrayerState();
+  };
 
   return (
     <LinearGradient
@@ -385,11 +395,9 @@ export default function Home() {
         <ScrollView contentContainerStyle={styles.content}>
           {view === "altar" && (
             <>
-              {/* Header with Jerusalem Time */}
-              <Text style={styles.headerLabel}>JERUSALEM TIME</Text>
+              {/* <Text style={styles.headerLabel}>JERUSALEM TIME</Text> */}
               <Text style={styles.appTitle}>KAIROS</Text>
 
-              {/* Current Time */}
               <Text style={styles.time}>
                 {now.toLocaleTimeString([], {
                   hour: "2-digit",
@@ -397,17 +405,14 @@ export default function Home() {
                 })}
               </Text>
 
-              {/* Greeting */}
               <Text style={styles.greeting}>{greeting}</Text>
 
-              {/* Scripture Box */}
               <View style={styles.scriptureBox}>
                 <Text style={styles.scriptureText}>{anchorScripture.text}</Text>
                 <View style={styles.divider} />
                 <Text style={styles.scriptureRef}>{anchorScripture.ref}</Text>
               </View>
 
-              {/* Sacred Hour Badge (if active) */}
               {currentSacredHour && (
                 <SacredHourDisplay
                   currentSacredHour={currentSacredHour}
@@ -415,7 +420,6 @@ export default function Home() {
                 />
               )}
 
-              {/* Start Button */}
               <TouchableOpacity
                 style={styles.startButton}
                 onPress={() => setView("selectDuration")}
@@ -423,28 +427,6 @@ export default function Home() {
                 <Text style={styles.startIcon}>✨</Text>
                 <Text style={styles.startText}>START</Text>
               </TouchableOpacity>
-
-              {/* Stop Notification Audio/Vibration Button */}
-              {notificationAudioActive && (
-                <TouchableOpacity
-                  style={styles.disableButton}
-                  onPress={async () => {
-                    if (soundRef.current) {
-                      await soundRef.current.stopAsync();
-                      setNotificationAudioActive(false);
-                    }
-                    if (Platform.OS === "android") {
-                      Vibration.cancel();
-                    }
-                    if (vibrationTimeoutRef.current) {
-                      clearTimeout(vibrationTimeoutRef.current);
-                      vibrationTimeoutRef.current = null;
-                    }
-                  }}
-                >
-                  <Text style={styles.disableText}>Stop Sacred Alert</Text>
-                </TouchableOpacity>
-              )}
 
               <Text style={styles.footerText}>
                 &quot;LORD, TEACH US TO PRAY&quot;
@@ -454,12 +436,7 @@ export default function Home() {
 
           {view === "selectDuration" && (
             <>
-              <TouchableOpacity
-                onPress={() => {
-                  setView("altar");
-                  clearPrayerState();
-                }}
-              >
+              <TouchableOpacity onPress={handleBackToAltar}>
                 <Text style={styles.back}>← Go Back</Text>
               </TouchableOpacity>
 
@@ -504,11 +481,7 @@ export default function Home() {
 
               <TouchableOpacity
                 style={styles.startButton}
-                onPress={() => {
-                  setRemaining(duration ?? 0);
-                  setPrayerStartTime(Date.now());
-                  setView("praying");
-                }}
+                onPress={handleStartPraying}
               >
                 <Text style={styles.startIcon}>✨</Text>
                 <Text style={styles.startText}>START PRAYING</Text>
@@ -523,8 +496,8 @@ export default function Home() {
                 minutes={minutes}
                 seconds={seconds}
                 canFinishPrayer={canFinishPrayer}
-                onBack={() => setView("altar")}
-                onFinish={() => setShowModal(true)}
+                onBack={handleBackToAltar}
+                onFinish={handleFinishPrayer}
               />
 
               <View style={styles.scriptureBox}>
@@ -547,12 +520,7 @@ export default function Home() {
           </Text>
           <TouchableOpacity
             style={styles.startButton}
-            onPress={() => {
-              setShowModal(false);
-              setView("altar");
-              setPrayerStartTime(null);
-              clearPrayerState();
-            }}
+            onPress={handleCloseModal}
           >
             <Text style={styles.startText}>AMEN</Text>
           </TouchableOpacity>
@@ -632,69 +600,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
     letterSpacing: 1,
   },
-  sacredBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(212, 175, 55, 0.15)",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: "#D4AF37",
-  },
-  sacredDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#D4AF37",
-    marginRight: 8,
-  },
-  sacredText: {
-    color: COLORS.primary,
-    fontSize: 12,
-    fontWeight: "700",
-    letterSpacing: 1.5,
-  },
-  hourInfo: {
-    alignItems: "center",
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  hourName: {
-    fontSize: 24,
-    fontWeight: "400",
-    color: COLORS.text,
-    textAlign: "center",
-    marginBottom: 6,
-  },
-  hourSubtitle: {
-    fontSize: 12,
-    color: COLORS.primary,
-    letterSpacing: 2,
-    fontWeight: "600",
-  },
-  // startButton: {
-  //   backgroundColor: "transparent",
-  //   paddingVertical: 16,
-  //   paddingHorizontal: 60,
-  //   borderRadius: 40,
-  //   marginTop: 30,
-  //   minWidth: 260,
-  //   borderWidth: 2,
-  //   borderColor: "#D4AF37",
-  //   flexDirection: "row",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   gap: 8,
-  // },
   startButton: {
     backgroundColor: "transparent",
     paddingVertical: 16,
     paddingHorizontal: 60,
     borderRadius: 40,
     marginTop: 30,
-    marginBottom: 40, // 👈 ADD THIS
+    marginBottom: 40,
     minWidth: 260,
     borderWidth: 2,
     borderColor: COLORS.primary,
@@ -703,8 +615,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-
-  disabledButton: { borderColor: "#4A4A4A", opacity: 0.5 },
   startIcon: {
     fontSize: 18,
   },
@@ -715,7 +625,6 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     textAlign: "center",
   },
-  disabledText: { color: "#6B7280" },
   footerText: {
     color: "rgba(255, 255, 255, 0.4)",
     fontSize: 11,
@@ -760,24 +669,6 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontWeight: "700",
   },
-  timerBox: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    marginVertical: 50,
-  },
-  minutes: {
-    fontSize: scale(72),
-    fontWeight: "300",
-    color: COLORS.text,
-    letterSpacing: 2,
-  },
-  seconds: {
-    fontSize: scale(36),
-    color: COLORS.primary,
-    marginBottom: 12,
-    marginLeft: 8,
-    fontWeight: "300",
-  },
   modal: {
     flex: 1,
     backgroundColor: COLORS.background,
@@ -798,21 +689,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 50,
     lineHeight: 28,
-  },
-  disableButton: {
-    backgroundColor: "transparent",
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 30,
-    marginTop: 20,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    alignItems: "center",
-  },
-  disableText: {
-    color: COLORS.primary,
-    fontWeight: "600",
-    fontSize: 14,
-    letterSpacing: 1,
   },
 });

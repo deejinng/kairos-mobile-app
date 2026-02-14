@@ -1,6 +1,6 @@
 import React from "react";
 import { Animated, Text, View } from "react-native";
-import { COLORS } from "../constants/appConstants";
+import { FONTS, COLORS } from "../constants/appConstants";
 
 interface SacredHourDisplayProps {
   currentSacredHour: { name: string; subtitle: string } | undefined;
@@ -58,7 +58,7 @@ export const SacredHourDisplay: React.FC<SacredHourDisplayProps> = ({
         <Text
           style={{
             fontSize: 24,
-            fontWeight: "400",
+            fontFamily: FONTS.regular,
             color: COLORS.text,
             textAlign: "center",
             marginBottom: 6,

@@ -121,13 +121,13 @@ export default function Navbar() {
                     letterSpacing: 1,
                   }}
                 >
-                  ALTAR
+                  {/* ALTAR */}
                 </Text>
               </TouchableOpacity>
             );
           }
 
-          // 🧭 OTHER TABS
+          //  OTHER TABS
           return (
             <TouchableOpacity
               key={label}

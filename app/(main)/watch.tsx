@@ -1,8 +1,6 @@
 // app/(main)/watch.tsx
-import { useAudioPlayer } from "expo-audio";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useVideoPlayer, VideoView } from "expo-video";
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -14,6 +12,7 @@ import {
   View,
 } from "react-native";
 import Navbar from "../../components/Navbar";
+import { FONTS } from "../../constants/appConstants";
 
 const { width, height } = Dimensions.get("window");
 
@@ -199,25 +198,6 @@ export default function WatchScreen() {
   const router = useRouter();
   const [expandedHour, setExpandedHour] = useState<string | null>(null);
 
-  const videoSource = require("../../assets/audio/video.mp4");
-  const player = useVideoPlayer(videoSource, (player) => {
-    player.loop = true;
-  });
-
-  const audioSource = require("../../assets/audio/song.mp3");
-  const audioPlayer = useAudioPlayer(audioSource);
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-
-  const toggleAudio = () => {
-    if (audioPlayer.playing) {
-      audioPlayer.pause();
-      setIsPlayingAudio(false);
-    } else {
-      audioPlayer.play();
-      setIsPlayingAudio(true);
-    }
-  };
-
   const handleGoBack = () => {
     if (router.canGoBack()) {
       router.back();
@@ -241,15 +221,6 @@ export default function WatchScreen() {
           <Text style={styles.subtitle}>
             Understanding Prayer & the Sacred Hours
           </Text>
-
-          {/* VIDEO SECTION */}
-          <View style={styles.videoWrapper}>
-            <VideoView
-              player={player}
-              style={styles.video}
-              allowsPictureInPicture
-            />
-          </View>
 
           {/* INTRO SECTION */}
           <View style={styles.introBox}>
@@ -282,20 +253,16 @@ export default function WatchScreen() {
             <Text style={styles.hoursText}>12pm · 3pm · 6pm · 9pm</Text>
           </View>
 
-          {/* AUDIO PLAYER */}
-          <TouchableOpacity onPress={toggleAudio} style={styles.audioBtn}>
-            <Text style={styles.audioText}>
-              {isPlayingAudio
-                ? "⏸ Pause Prayer Music"
-                : "▶ Play Prayer Music"}
-            </Text>
-          </TouchableOpacity>
-
           <Text style={styles.paragraph}>
             These eight watches divide the day into seasons of prayer. Each hour
             carries its own spiritual significance, from the midnight cry to the
             evening sacrifice.
           </Text>
+
+          {/*
+<Text style={styles.paragraphYellow}>
+            CLICK ANY OF THE BUTTONS BELOW TO READ AND UNDERSTAND THE WATCJES
+          </Text>*/}
 
           {/* EACH HOUR DETAILS */}
           {prayerHours.map((hour) => (
@@ -401,31 +368,21 @@ const styles = StyleSheet.create({
 
   header: {
     fontSize: scale(40),
-    fontWeight: "700",
-    color: "#FFFFFF",
+    fontFamily: FONTS.bold,
+    color: "#D4AF37",
     marginBottom: scale(8),
     letterSpacing: 1,
   },
-
+  paragraphYellow: {
+    fontSize: scale(16),
+    fontFamily: FONTS.bold,
+    color: "#D4AF37",
+    textAlign: "center",
+  },
   subtitle: {
     fontSize: scale(18),
     color: "rgba(255, 255, 255, 0.7)",
     marginBottom: scale(24),
-  },
-
-  videoWrapper: {
-    marginBottom: scale(30),
-    borderRadius: scale(20),
-    overflow: "hidden",
-    backgroundColor: "rgba(0,0,0,0.4)",
-    borderWidth: 1,
-    borderColor: "rgba(212, 175, 55, 0.2)",
-  },
-
-  video: {
-    width: width * 0.88,
-    height: scale(220),
-    alignSelf: "center",
   },
 
   introBox: {
@@ -456,7 +413,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: scale(26),
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: "#D4AF37",
     marginTop: scale(30),
     marginBottom: scale(16),
   },
@@ -483,24 +440,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
     marginVertical: scale(4),
-    letterSpacing: 1,
-  },
-
-  audioBtn: {
-    backgroundColor: "rgba(212, 175, 55, 0.15)",
-    padding: scale(18),
-    borderRadius: scale(28),
-    alignItems: "center",
-    marginTop: scale(20),
-    marginBottom: scale(20),
-    borderWidth: 1,
-    borderColor: "#D4AF37",
-  },
-
-  audioText: {
-    color: "#D4AF37",
-    fontSize: scale(16),
-    fontWeight: "700",
     letterSpacing: 1,
   },
 
@@ -533,7 +472,7 @@ const styles = StyleSheet.create({
 
   hourTime: {
     fontSize: scale(16),
-    fontWeight: "700",
+    fontFamily: FONTS.bold,
     color: "#D4AF37",
     textAlign: "center",
   },
@@ -544,7 +483,7 @@ const styles = StyleSheet.create({
 
   hourName: {
     fontSize: scale(18),
-    fontWeight: "700",
+    fontFamily: FONTS.bold,
     color: "#FFFFFF",
     marginBottom: scale(4),
   },
@@ -561,7 +500,7 @@ const styles = StyleSheet.create({
 
   expandedLabel: {
     fontSize: scale(16),
-    fontWeight: "700",
+    fontFamily: FONTS.bold,
     color: "#D4AF37",
     marginTop: scale(16),
     marginBottom: scale(8),
@@ -610,7 +549,7 @@ const styles = StyleSheet.create({
 
   calloutText: {
     fontSize: scale(22),
-    fontWeight: "700",
+    fontFamily: FONTS.bold,
     color: "#D4AF37",
     marginBottom: scale(8),
     textAlign: "center",
@@ -637,8 +576,7 @@ const styles = StyleSheet.create({
   startButtonText: {
     color: "#D4AF37",
     fontSize: scale(18),
-    fontWeight: "700",
+    fontFamily: FONTS.bold,
     letterSpacing: 2,
-    // paddingBottom:
   },
 });

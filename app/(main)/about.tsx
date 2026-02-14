@@ -15,6 +15,9 @@ import {
 import Navbar from "../../components/Navbar";
 
 const { width, height } = Dimensions.get("window");
+const openKofi = () => {
+  Linking.openURL("https://ko-fi.com/olatejuolamide");
+};
 
 // Responsive helpers
 const isSmallDevice = width < 375;
@@ -62,6 +65,16 @@ export default function AboutScreen() {
 
           {/* New: Why Kairos Exists */}
           <Text style={styles.section}>Why Kairos Exists</Text>
+
+          <View
+            style={{
+              height: 1,
+              backgroundColor: "rgba(212,175,55,0.3)",
+              marginBottom: 12,
+              width: 60,
+            }}
+          />
+
           <View style={styles.card}>
             <Text style={styles.paragraph}>
               Modern life moves fast. Attention is scattered. Prayer is often
@@ -130,7 +143,7 @@ export default function AboutScreen() {
           </View>
 
           {/* Support Development */}
-          <Text style={styles.section}>Support Development</Text>
+          {/* <Text style={styles.section}>Support Development</Text>
           <View style={styles.card}>
             <Text style={styles.paragraph}>
               Kairos is independently built and maintained. If this app has
@@ -141,6 +154,19 @@ export default function AboutScreen() {
               Moniepoint
               {"\n"}Account Number: 8086976247
             </Text>
+          </View> */}
+
+          {/* Removed the account number I had */}
+          <Text style={styles.section}>Support Development</Text>
+          <View style={styles.card}>
+            <Text style={styles.paragraph}>
+              Kairos is independently built and maintained. If this app has
+              helped you, you can support its development via Ko-fi!
+            </Text>
+
+            <TouchableOpacity style={styles.button} onPress={openKofi}>
+              <Text style={styles.buttonText}>Support Kairos</Text>
+            </TouchableOpacity>
           </View>
 
           {/* Final Footer with Psalm */}
@@ -211,11 +237,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: isTablet ? 40 : 26,
     minHeight: height,
   },
+  button: {
+    backgroundColor: "#D4AF37", // sacred gold
+    paddingVertical: 14,
+    borderRadius: 22,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#1a0f2e",
+    fontWeight: "700",
+    fontSize: 16,
+    letterSpacing: 0.5,
+  },
 
   header: {
     fontSize: scale(34),
     fontWeight: "700",
-    color: "#FFFFFF",
+    color: "#D4AF37",
     marginBottom: scale(24),
     textAlign: "center",
     letterSpacing: 1,
