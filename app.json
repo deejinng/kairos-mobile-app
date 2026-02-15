@@ -7,33 +7,32 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
-
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a0f2e"
+    },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          // "image": "./assets/images/splash.png",
-          // "resizeMode": "contain",
-          "backgroundColor": "#1a0f2e"
+          "backgroundColor": "#1a0f2e",
+          "resizeMode": "contain"
         }
       ],
       "expo-font"
     ],
-
     "android": {
       "package": "com.olateju.kairos",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#1a0f2e"
-      },
-      "edgeToEdgeEnabled": true
+      }
     },
-
     "ios": {
       "supportsTablet": true
     },
-
     "extra": {
       "router": {},
       "eas": {
