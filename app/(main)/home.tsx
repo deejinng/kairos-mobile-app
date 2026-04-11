@@ -8,7 +8,6 @@ import {
   Dimensions,
   Modal,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,6 +16,8 @@ import {
   View,
   AppStateStatus,
 } from "react-native";
+
+import { SafeAreaView } from "react-native-safe-area-context";
 import Navbar from "../../components/Navbar";
 import { PrayerTimer } from "../../components/PrayerTimer";
 import { SacredHourDisplay } from "../../components/SacredHourDisplay";
