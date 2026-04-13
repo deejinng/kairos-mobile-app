@@ -1,12 +1,11 @@
 import { usePathname, useRouter } from "expo-router";
-import { BookOpen, Clock, Flame, Info, PenTool } from "lucide-react-native";
+import { BookOpen, Clock, Droplets, Flame, PenTool } from "lucide-react-native";
 import React from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
-// Responsive helpers
 const isSmallDevice = width < 375;
 const isTablet = width >= 768;
 
@@ -22,11 +21,11 @@ export default function Navbar() {
   const insets = useSafeAreaInsets();
 
   const tabs = [
-    { label: "Watch", icon: Clock, route: "/(main)/watch" },
+    { label: "Kairos", icon: Clock, route: "/(main)/kairos" },
     { label: "Meditations", icon: BookOpen, route: "/(main)/meditations" },
     { label: "Altar", icon: Flame, route: "/(main)/home", isMain: true },
     { label: "Scribe", icon: PenTool, route: "/(main)/scribe" },
-    { label: "About", icon: Info, route: "/(main)/about" },
+    { label: "Fasting", icon: Droplets, route: "/(main)/fasting" },
   ];
 
   return (
@@ -127,7 +126,7 @@ export default function Navbar() {
             );
           }
 
-          //  OTHER TABS
+          // OTHER TABS
           return (
             <TouchableOpacity
               key={label}
