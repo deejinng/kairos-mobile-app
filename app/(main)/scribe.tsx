@@ -222,7 +222,7 @@ export default function ScribeScreen() {
 
   return (
     <LinearGradient
-      colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
+      colors={["#0a0312", "#17071e", "#29143d"]}
       style={styles.container}
       className="pb-16"
     >
@@ -230,7 +230,12 @@ export default function ScribeScreen() {
         {!showEditor ? (
           <>
             <View style={styles.header}>
-              <Text style={styles.headerTitle}>Kairos</Text>
+              <View>
+                <Text style={styles.headerTitle}>Kairos</Text>
+                <Text style={styles.headerSubtitle}>
+                  Capture quiet prayers, dreams, and scripture reflections.
+                </Text>
+              </View>
               <View style={styles.headerRight}>
                 <TouchableOpacity
                   onPress={() =>
@@ -419,6 +424,14 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
 
+  headerSubtitle: {
+    fontSize: scale(14),
+    color: "rgba(255,255,255,0.75)",
+    marginTop: 4,
+    lineHeight: scale(20),
+    maxWidth: width * 0.58,
+  },
+
   headerRight: {
     flexDirection: "row",
     gap: 12,
@@ -494,10 +507,12 @@ const styles = StyleSheet.create({
   },
 
   entryCard: {
-    backgroundColor: "rgba(255,255,255,0.15)",
-    borderRadius: 20,
+    backgroundColor: "rgba(79, 18, 138, 0.28)",
+    borderRadius: 24,
     padding: 18,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "rgba(212, 175, 55, 0.16)",
   },
 
   entryCardGrid: {
@@ -569,7 +584,7 @@ const styles = StyleSheet.create({
   },
 
   saveButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#D4AF37",
     paddingHorizontal: 28,
     paddingVertical: 12,
     borderRadius: 20,
@@ -578,14 +593,16 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: scale(17),
     fontWeight: "700",
-    color: "#1E3A8A",
+    color: "#1a0f2e",
   },
 
   exportButton: {
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "rgba(255,255,255,0.12)",
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.18)",
   },
 
   exportButtonText: {
@@ -601,7 +618,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255,255,255,0.2)",
+    borderBottomColor: "rgba(255,255,255,0.18)",
   },
 
   tagSelector: {
@@ -613,7 +630,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.15)",
+    backgroundColor: "rgba(255,255,255,0.08)",
     marginRight: 8,
   },
 
@@ -630,13 +647,13 @@ const styles = StyleSheet.create({
   scriptureInput: {
     fontSize: scale(15),
     color: "#FDE68A",
-    backgroundColor: "rgba(253,230,138,0.1)",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    backgroundColor: "rgba(255,255,255,0.06)",
+    borderRadius: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "rgba(253,230,138,0.3)",
+    borderColor: "rgba(212, 175, 55, 0.22)",
   },
 
   contentInput: {
@@ -644,19 +661,20 @@ const styles = StyleSheet.create({
     fontSize: scale(17),
     color: "#FFFFFF",
     lineHeight: 26,
-    backgroundColor: "rgba(255,255,255,0.08)",
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: "rgba(82, 36, 142, 0.22)",
+    borderRadius: 20,
+    padding: 18,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "rgba(212, 175, 55, 0.18)",
   },
 
   cancelButton: {
-    backgroundColor: "rgba(255,255,255,0.15)",
+    backgroundColor: "rgba(255,255,255,0.14)",
     paddingVertical: 14,
     borderRadius: 20,
     alignItems: "center",
   },
-
   cancelButtonText: {
     fontSize: scale(16),
     fontWeight: "600",

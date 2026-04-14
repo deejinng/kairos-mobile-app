@@ -7,18 +7,19 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#1a0f2e"
-    },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
           "backgroundColor": "#1a0f2e",
-          "resizeMode": "contain"
+          "image": "./assets/images/splash.png",
+          "resizeMode": "contain",
+          "dark": {
+            "backgroundColor": "#1a0f2e",
+            "image": "./assets/images/splash.png"
+          },
+          "imageWidth": 200
         }
       ],
       "expo-font"

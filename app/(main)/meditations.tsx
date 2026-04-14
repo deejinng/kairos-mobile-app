@@ -58,7 +58,7 @@ export default function MeditationScreen() {
 
   return (
     <LinearGradient
-      colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
+      colors={["#0f0518", "#1a0f2e", "#29143d"]}
       style={styles.container}
     >
       <SafeAreaView style={{ flex: 1 }}>
@@ -74,22 +74,34 @@ export default function MeditationScreen() {
           {/* VERSE OF THE DAY */}
           <View style={styles.dailyCard}>
             <Text style={styles.cardLabel}>VERSE OF THE DAY</Text>
-            <Text style={styles.verseText}>{todaysVerse.text}</Text>
-            <Text style={styles.verseRef}>{todaysVerse.ref}</Text>
+            <Text style={styles.verseText} selectable>
+              {todaysVerse.text}
+            </Text>
+            <Text style={styles.verseRef} selectable>
+              {todaysVerse.ref}
+            </Text>
           </View>
 
           {/* DAILY QUOTE */}
           <View style={styles.quoteCard}>
             <Text style={styles.cardLabel}>DAILY WISDOM</Text>
-            <Text style={styles.quoteText}>&quot;{todaysQuote.text}&quot;</Text>
-            <Text style={styles.quoteAuthor}>— {todaysQuote.author}</Text>
+            <Text style={styles.quoteText} selectable>
+              &quot;{todaysQuote.text}&quot;
+            </Text>
+            <Text style={styles.quoteAuthor} selectable>
+              — {todaysQuote.author}
+            </Text>
           </View>
 
           {/* DAILY PSALM */}
           <View style={styles.psalmCard}>
             <Text style={styles.cardLabel}>TODAY&apos;S PSALM</Text>
-            <Text style={styles.psalmText}>{todaysPsalm.text}</Text>
-            <Text style={styles.psalmRef}>{todaysPsalm.ref}</Text>
+            <Text style={styles.psalmText} selectable>
+              {todaysPsalm.text}
+            </Text>
+            <Text style={styles.psalmRef} selectable>
+              {todaysPsalm.ref}
+            </Text>
           </View>
 
           {/* TODAY'S THEME - ONE THEME PER DAY */}
@@ -191,50 +203,51 @@ const styles = StyleSheet.create({
   },
 
   dailyCard: {
-    backgroundColor: "rgba(212, 175, 55, 0.15)",
+    backgroundColor: "rgba(77, 21, 123, 0.28)",
     padding: isTablet ? 28 : 24,
-    borderRadius: 20,
+    borderRadius: 24,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: "rgba(212, 175, 55, 0.3)",
+    borderColor: "rgba(212, 175, 55, 0.2)",
     width: "100%",
     maxWidth: isTablet ? 700 : undefined,
     alignSelf: "center",
   },
 
   quoteCard: {
-    backgroundColor: "rgba(139, 92, 246, 0.15)",
+    backgroundColor: "rgba(90, 37, 168, 0.25)",
     padding: isTablet ? 28 : 24,
-    borderRadius: 20,
+    borderRadius: 24,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: "rgba(139, 92, 246, 0.3)",
+    borderColor: "rgba(212, 175, 55, 0.2)",
     width: "100%",
     maxWidth: isTablet ? 700 : undefined,
     alignSelf: "center",
   },
 
   psalmCard: {
-    backgroundColor: "rgba(20, 184, 166, 0.15)",
+    backgroundColor: "rgba(60, 18, 110, 0.25)",
     padding: isTablet ? 28 : 24,
-    borderRadius: 20,
+    borderRadius: 24,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: "rgba(20, 184, 166, 0.3)",
+    borderColor: "rgba(212, 175, 55, 0.2)",
     width: "100%",
     maxWidth: isTablet ? 700 : undefined,
     alignSelf: "center",
   },
 
   todaysThemeCard: {
-    backgroundColor: "rgba(255,255,255,0.08)",
+    backgroundColor: "rgba(48, 11, 98, 0.3)",
     padding: isTablet ? 28 : 24,
-    borderRadius: 20,
+    borderRadius: 24,
     marginBottom: 30,
-    borderWidth: 2,
+    borderWidth: 1,
     width: "100%",
     maxWidth: isTablet ? 700 : undefined,
     alignSelf: "center",
+    borderColor: "rgba(212, 175, 55, 0.25)",
   },
 
   cardLabel: {

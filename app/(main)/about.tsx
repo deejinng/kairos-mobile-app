@@ -1,5 +1,16 @@
 // app/(main)/about.tsx
 import { LinearGradient } from "expo-linear-gradient";
+import {
+  Heart,
+  BookOpen,
+  Clock,
+  Lightbulb,
+  Users,
+  Mail,
+  Bug,
+  Zap,
+  Send,
+} from "lucide-react-native";
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -40,7 +51,7 @@ export default function AboutScreen() {
 
   return (
     <LinearGradient
-      colors={["#1a0f2e", "#2d1b4e", "#1a0f2e"]}
+      colors={["#0a0312", "#17071e", "#2d1b4e"]}
       style={styles.container}
     >
       <SafeAreaView style={{ flex: 1 }}>
@@ -52,128 +63,143 @@ export default function AboutScreen() {
 
           {/* Original About Section */}
           <View style={styles.card}>
+            <View style={styles.iconRow}>
+              <Heart size={28} color="#D4AF37" strokeWidth={1.5} />
+            </View>
             <Text style={styles.paragraph}>
-              Kairos is a space for alignment. A quiet companion for prayer,
-              reflection, and attentiveness to God.
+              Kairos is a sacred space for alignment. A quiet companion built
+              for those who want to pray with intention, listen to Scripture,
+              and record what God whispers into their lives.
             </Text>
 
             <Text style={styles.paragraph}>
-              It is built around sacred rhythms in Scripture, moments where God
-              invites response.
+              It is rooted in the sacred rhythms of Scripture—those moments
+              where God invites response and relationship deepens.
             </Text>
           </View>
 
-          {/* New: Why Kairos Exists */}
+          {/* Why Kairos Exists */}
           <Text style={styles.section}>Why Kairos Exists</Text>
 
-          <View
-            style={{
-              height: 1,
-              backgroundColor: "rgba(212,175,55,0.3)",
-              marginBottom: 12,
-              width: 60,
-            }}
-          />
-
           <View style={styles.card}>
+            <View style={styles.iconRow}>
+              <Clock size={28} color="#D4AF37" strokeWidth={1.5} />
+            </View>
             <Text style={styles.paragraph}>
-              Modern life moves fast. Attention is scattered. Prayer is often
-              rushed, postponed, or reduced to habit.
+              In a world of endless noise, prayer has become rushed. We scroll
+              instead of pray. We defer instead of seek.
             </Text>
 
             <Text style={styles.paragraph}>
-              Kairos was built to restore rhythm. To slow the soul. To help
-              believers return to prayer not as duty, but as relationship.
+              Kairos was born to restore what our souls hunger for: rhythm,
+              silence, and genuine encounter with God. It&apos;s a tool to help
+              you return to prayer—not as obligation, but as the most natural
+              act of intimacy.
             </Text>
           </View>
 
-          {/* New: How to Use This App */}
+          {/* How to Use This App */}
           <Text style={styles.section}>How to Use This App</Text>
           <View style={styles.card}>
-            <Text style={styles.paragraph}>
-              • Begin with the Home altar to enter prayer.
-            </Text>
-            <Text style={styles.paragraph}>
-              • Learn the meaning of sacred hours in Watch.
-            </Text>
-            <Text style={styles.paragraph}>
-              • Feed your prayers with Scripture.
-            </Text>
-            <Text style={styles.paragraph}>
-              • Record what God speaks in Scribe.
-            </Text>
+            <IconRow
+              icon={<Heart size={20} color="#D4AF37" strokeWidth={2} />}
+              label="Altar"
+              desc="Begin your prayer in a sacred space."
+            />
+            <IconRow
+              icon={<Clock size={20} color="#D4AF37" strokeWidth={2} />}
+              label="Watch"
+              desc="Learn the sacredness of prayer times."
+            />
+            <IconRow
+              icon={<BookOpen size={20} color="#D4AF37" strokeWidth={2} />}
+              label="Feed"
+              desc="Nourish your prayers with Scripture."
+            />
+            <IconRow
+              icon={<Lightbulb size={20} color="#D4AF37" strokeWidth={2} />}
+              label="Scribe"
+              desc="Capture what God speaks to your heart."
+            />
           </View>
 
-          {/* New: A Gentle Reminder */}
-          <Text style={styles.section}>A Gentle Reminder</Text>
+          {/* A Gentle Reminder */}
+          <Text style={styles.section}>What Kairos Is Not</Text>
           <View style={styles.card}>
+            <View style={styles.iconRow}>
+              <Users size={28} color="#D4AF37" strokeWidth={1.5} />
+            </View>
             <Text style={styles.paragraph}>
-              Kairos does not replace Scripture. It does not replace the Church.
-              It does not replace personal devotion.
+              Kairos does not replace Scripture. It does not replace the Church
+              or personal Bible study.
             </Text>
 
             <Text style={styles.paragraph}>
-              It is a companion, a quiet tool meant to support discipline,
-              attentiveness, and faithfulness.
+              It is a companion—a quiet tool designed to support your
+              discipline, deepen your attentiveness, and strengthen your
+              faithfulness to prayer.
             </Text>
           </View>
 
           {/* Get Involved Section */}
-          <Text style={styles.section}>Get Involved</Text>
+          <Text style={styles.section}>Connect & Contribute</Text>
           <View style={styles.card}>
             <ActionButton
+              icon={<Mail size={18} color="#D4AF37" strokeWidth={2} />}
               label="Contact the Developer"
               onPress={() => setContactVisible(true)}
             />
 
             <ActionButton
+              icon={<Bug size={18} color="#D4AF37" strokeWidth={2} />}
               label="Report an Issue"
               onPress={() => sendEmail("Kairos App — Issue Report")}
             />
 
             <ActionButton
+              icon={<Zap size={18} color="#D4AF37" strokeWidth={2} />}
               label="Suggest a Feature"
               onPress={() => sendEmail("Kairos App — Feature Suggestion")}
             />
 
             <ActionButton
+              icon={<Send size={18} color="#D4AF37" strokeWidth={2} />}
               label="Send Feedback"
               onPress={() => sendEmail("Kairos App — Feedback")}
             />
           </View>
 
-          {/* Support Development */}
-          {/* <Text style={styles.section}>Support Development</Text>
+          <Text style={styles.section}>Support This Mission</Text>
           <View style={styles.card}>
+            <View style={styles.iconRow}>
+              <Heart size={28} color="#D4AF37" strokeWidth={1.5} />
+            </View>
             <Text style={styles.paragraph}>
-              Kairos is independently built and maintained. If this app has
-              helped you, you may support its development.
+              Kairos is independently created and maintained. Your support helps
+              keep this ministry free and growing for everyone.
             </Text>
 
             <Text style={styles.supportInfo}>
-              Moniepoint
-              {"\n"}Account Number: 8086976247
-            </Text>
-          </View> */}
-
-          {/* Removed the account number I had */}
-          <Text style={styles.section}>Support Development</Text>
-          <View style={styles.card}>
-            <Text style={styles.paragraph}>
-              Kairos is independently built and maintained. If this app has
-              helped you, you can support its development via Ko-fi!
+              Access Bank · Nigeria
+              {"\n"}Account: 1960476133
+              {"\n"}Name: OLAMIDE OLATEJU EMMANUEL
             </Text>
 
             <TouchableOpacity style={styles.button} onPress={openKofi}>
-              <Text style={styles.buttonText}>Support Kairos</Text>
+              <Text style={styles.buttonText}>Support via Ko-fi</Text>
             </TouchableOpacity>
+
+            <Text style={styles.featureNote}>
+              🎯 Coming soon: version 1.4 will introduce guided prayer series,
+              deeper fasting tracks, customizable prayer reminders, and more.
+            </Text>
           </View>
 
           {/* Final Footer with Psalm */}
           <Text style={styles.footer}>
             &quot;Teach us to number our days, that we may apply our hearts unto
             wisdom.&quot;
-            {"\n"}— Psalm 90:12{"\n\n"}
+            {"\n"}&mdash; Psalm 90:12{"\n\n"}
             Kairos exists to serve, not to impress.
           </Text>
         </ScrollView>
@@ -185,17 +211,20 @@ export default function AboutScreen() {
       <Modal visible={contactVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Contact the Developer</Text>
+            <Text style={styles.modalTitle}>Contact Developer</Text>
 
             <Text style={styles.modalText}>
-              Email:
-              {"\n"}olateju202@gmail.com
+              Email
+              {"\n"}
+              <Text style={styles.modalBold}>olateju202@gmail.com</Text>
             </Text>
 
             <Text style={styles.modalText}>
-              Phone:
-              {"\n"}+234 808 697 6247
-              {"\n"}+234 916 307 8466
+              Phone
+              {"\n"}
+              <Text style={styles.modalBold}>
+                +234 808 697 6247{"\n"}+234 916 307 8466
+              </Text>
             </Text>
 
             <TouchableOpacity
@@ -211,16 +240,40 @@ export default function AboutScreen() {
   );
 }
 
-/* ---------------- SMALL COMPONENT ---------------- */
+/* Icon Row Component */
+function IconRow({
+  icon,
+  label,
+  desc,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  desc: string;
+}) {
+  return (
+    <View style={styles.featureRow}>
+      <View style={styles.iconBox}>{icon}</View>
+      <View style={styles.featureContent}>
+        <Text style={styles.featureLabel}>{label}</Text>
+        <Text style={styles.featureDesc}>{desc}</Text>
+      </View>
+    </View>
+  );
+}
+
+/* Action Button Component */
 function ActionButton({
+  icon,
   label,
   onPress,
 }: {
+  icon?: React.ReactNode;
   label: string;
   onPress: () => void;
 }) {
   return (
     <TouchableOpacity onPress={onPress} style={styles.actionBtn}>
+      {icon && <View style={styles.buttonIcon}>{icon}</View>}
       <Text style={styles.actionText}>{label}</Text>
     </TouchableOpacity>
   );
@@ -271,7 +324,7 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: "rgba(255,255,255,0.08)",
+    backgroundColor: "rgba(76, 20, 123, 0.24)",
     padding: isTablet ? 28 : 24,
     borderRadius: 24,
     width: "100%",
@@ -305,6 +358,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 2,
     borderColor: "#D4AF37",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   actionText: {
@@ -372,5 +428,63 @@ const styles = StyleSheet.create({
     fontSize: scale(16),
     fontWeight: "700",
     textAlign: "center",
+  },
+
+  iconRow: {
+    marginBottom: 16,
+    alignItems: "center",
+  },
+
+  featureRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 18,
+  },
+
+  iconBox: {
+    width: 44,
+    height: 44,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(212, 175, 55, 0.12)",
+    borderRadius: 14,
+    marginRight: 14,
+  },
+
+  featureContent: {
+    flex: 1,
+  },
+
+  featureLabel: {
+    fontSize: scale(16),
+    fontWeight: "700",
+    color: "#D4AF37",
+    marginBottom: 4,
+  },
+
+  featureDesc: {
+    fontSize: scale(15),
+    color: "rgba(255, 255, 255, 0.75)",
+    lineHeight: scale(22),
+  },
+
+  buttonIcon: {
+    marginRight: 10,
+  },
+
+  featureNote: {
+    fontSize: scale(14),
+    color: "rgba(255, 255, 255, 0.68)",
+    lineHeight: scale(20),
+    marginTop: 16,
+    fontStyle: "italic",
+    backgroundColor: "rgba(212, 175, 55, 0.08)",
+    padding: 12,
+    borderRadius: 12,
+  },
+
+  modalBold: {
+    fontWeight: "700",
+    color: "#D4AF37",
   },
 });

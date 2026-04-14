@@ -1,10 +1,15 @@
-// app/(main)/home.tsx
 import { LinearGradient } from "expo-linear-gradient";
-import * as Notifications from "expo-notifications";
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Animated,
   AppState,
+  AppStateStatus,
   Dimensions,
   Modal,
   Platform,
@@ -14,48 +19,21 @@ import {
   TouchableOpacity,
   Vibration,
   View,
-  AppStateStatus,
 } from "react-native";
-
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Navbar from "../../components/Navbar";
 import { PrayerTimer } from "../../components/PrayerTimer";
 import { SacredHourDisplay } from "../../components/SacredHourDisplay";
 import { COLORS } from "../../constants/appConstants";
 import { usePrayerState, ViewState } from "../../hooks/usePrayerState";
+import { usePrayerTimes } from "../../hooks/usePrayerTimes";
+import { scaleFont, scaleSize, verticalScale } from "../../hooks/useResponsive";
 
-// Configure notification handler
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
+// ─── Constants ────────────────────────────────────────────────────────────────
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
-const prayerHours = [
-  { hour: 0, name: "The Midnight Hour", subtitle: "WARFARE • NIGHT PRAYER" },
-  { hour: 3, name: "The Third Hour", subtitle: "REVELATION • MORNING WATCH" },
-  { hour: 6, name: "The Sixth Hour", subtitle: "PRIME • DAWN SACRIFICE" },
-  { hour: 9, name: "The Ninth Hour", subtitle: "TERCE • THIRD HOUR" },
-  { hour: 12, name: "The Twelfth Hour", subtitle: "SEXT • MIDDAY PRAYER" },
-  { hour: 15, name: "The Ninth Hour", subtitle: "HOUR OF MERCY • AFTERNOON" },
-  {
-    hour: 18,
-    name: "The Twelfth Hour",
-    subtitle: "VESPERS • EVENING SACRIFICE",
-  },
-  {
-    hour: 21,
-    name: "The Third Hour",
-    subtitle: "COMPLINE • NIGHT PRAYER",
-  },
-];
-
-const prayerScriptures = [
+const PRAYER_SCRIPTURES = [
   { ref: "1 Thessalonians 5:17", text: "Pray without ceasing." },
   {
     ref: "Jeremiah 29:13",
@@ -64,10 +42,6 @@ const prayerScriptures = [
   {
     ref: "Philippians 4:6",
     text: "In every thing by prayer and supplication with thanksgiving let your requests be made known unto God.",
-  },
-  {
-    ref: "Matthew 6:14",
-    text: "For if ye forgive men their trespasses, your heavenly Father will also forgive you.",
   },
   {
     ref: "Ephesians 6:18",
@@ -87,11 +61,8 @@ const prayerScriptures = [
   },
 ];
 
-const anchorScriptures = [
-  {
-    ref: "Luke 18:1",
-    text: "And he spake a parable unto them to this end, that men ought always to pray, and not to faint;",
-  },
+const ANCHOR_SCRIPTURES = [
+  { ref: "Luke 18:1", text: "Men ought always to pray, and not to faint." },
   {
     ref: "Psalm 55:17",
     text: "Evening, and morning, and at noon, will I pray, and cry aloud: and he shall hear my voice.",
@@ -110,66 +81,50 @@ const anchorScriptures = [
   },
 ];
 
-async function scheduleSacredHourNotifications() {
-  try {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
+const format12h = (time24: string): string => {
+  const [hStr, mStr] = time24.split(":");
+  const h = parseInt(hStr, 10);
+  const period = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${mStr} ${period}`;
+};
 
-    if (finalStatus !== "granted") {
-      console.log("Notification permissions not granted");
-      return false;
-    }
+const getGreeting = (date: Date): string => {
+  const h = date.getHours();
+  if (h >= 0 && h < 5) return "Good Night";
+  if (h >= 5 && h < 12) return "Good Morning";
+  if (h >= 12 && h < 17) return "Good Afternoon";
+  if (h >= 17 && h < 21) return "Good Evening";
+  return "Good Night";
+};
 
-    if (Platform.OS === "android") {
-      await Notifications.setNotificationChannelAsync("prayer-reminders", {
-        name: "Sacred Hour Reminders",
-        importance: Notifications.AndroidImportance.MAX,
-        sound: "default",
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#D4AF37",
-        enableVibrate: true,
-        enableLights: true,
-      });
-    }
+/** Minutes until a "HH:MM" time from now */
+const minsUntil = (time24: string): number => {
+  const [hh, mm] = time24.split(":").map(Number);
+  const now = new Date();
+  const target = hh * 60 + mm;
+  const current = now.getHours() * 60 + now.getMinutes();
+  const diff = target - current;
+  return diff > 0 ? diff : diff + 1440; // wrap to tomorrow
+};
 
-    await Notifications.cancelAllScheduledNotificationsAsync();
+const formatUntil = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours <= 0) return `${mins}m`;
+  return mins === 0 ? `${hours}h` : `${hours}h ${mins}m`;
+};
 
-    for (const prayerHour of prayerHours) {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "🕊️ SACRED HOUR",
-          body: `${prayerHour.name} - The Lord is calling you to pause and pray.`,
-          sound: "default",
-          priority: Notifications.AndroidNotificationPriority.MAX,
-          categoryIdentifier: "PRAYER_REMINDER",
-          data: {
-            sacredHour: prayerHour.hour,
-            prayerName: prayerHour.name,
-          },
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.DAILY,
-          hour: prayerHour.hour,
-          minute: 0,
-        },
-      });
-    }
-
-    console.log("Sacred hour notifications scheduled successfully");
-    return true;
-  } catch (error) {
-    console.error("Notification setup error:", error);
-    return false;
-  }
-}
+// ─── Main Screen ──────────────────────────────────────────────────────────────
 
 export default function Home() {
+  const insets = useSafeAreaInsets();
+  const { getNextPrayer } = usePrayerTimes();
+  const { savePrayerState, loadPrayerState, clearPrayerState } =
+    usePrayerState();
+
   const [now, setNow] = useState(new Date());
   const [view, setView] = useState<ViewState>("altar");
   const [duration, setDuration] = useState<number | null>(null);
@@ -177,161 +132,122 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [prayerStartTime, setPrayerStartTime] = useState<number | null>(null);
 
-  const pulseAnim = useState(new Animated.Value(1))[0];
+  const pulseAnim = useRef(new Animated.Value(1)).current;
   const appState = useRef<AppStateStatus>(AppState.currentState);
 
-  const { savePrayerState, loadPrayerState, clearPrayerState } =
-    usePrayerState();
+  // ── Static memos ──
+  const anchorScripture = useMemo(
+    () =>
+      ANCHOR_SCRIPTURES[Math.floor(Math.random() * ANCHOR_SCRIPTURES.length)],
+    [],
+  );
 
-  // Pick random anchor scripture on mount
-  const anchorScripture = useMemo(() => {
-    return anchorScriptures[
-      Math.floor(Math.random() * anchorScriptures.length)
-    ];
+  // ── Live clock ──
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  // Load saved prayer state on mount
+  // ── Restore prayer session on mount ──
   useEffect(() => {
-    const restoreState = async () => {
+    (async () => {
       const restored = await loadPrayerState();
-      if (restored) {
-        setView(restored.view);
-        setDuration(restored.duration);
-        setPrayerStartTime(restored.prayerStartTime);
-
-        // Recalculate remaining time based on elapsed time
-        if (restored.prayerStartTime) {
-          const elapsed = Math.floor(
-            (Date.now() - restored.prayerStartTime) / 1000,
-          );
-          if (restored.duration) {
-            // Timed prayer
-            setRemaining(Math.max(0, restored.duration - elapsed));
-          } else {
-            // Open-ended prayer
-            setRemaining(elapsed);
-          }
+      if (!restored) return;
+      setView(restored.view);
+      setDuration(restored.duration);
+      setPrayerStartTime(restored.prayerStartTime);
+      if (restored.prayerStartTime) {
+        const elapsed = Math.floor(
+          (Date.now() - restored.prayerStartTime) / 1000,
+        );
+        if (restored.duration) {
+          setRemaining(Math.max(0, restored.duration - elapsed));
+        } else {
+          setRemaining(elapsed);
         }
       }
-    };
-    restoreState();
+    })();
   }, [loadPrayerState]);
 
-  // Save state whenever prayer session changes
+  // ── Save session when active ──
   useEffect(() => {
     if (view === "praying" && prayerStartTime) {
       savePrayerState(view, duration, prayerStartTime, remaining);
     }
   }, [view, duration, remaining, prayerStartTime, savePrayerState]);
 
-  // Handle app state changes (background/foreground)
+  // ── App foreground/background ──
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      // App coming to foreground
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
-      ) {
-        // Recalculate remaining time based on actual elapsed time
+    const sub = AppState.addEventListener("change", (next: AppStateStatus) => {
+      const wasBackground = appState.current.match(/inactive|background/);
+      const isNowActive = next === "active";
+      const isNowBackground = next.match(/inactive|background/);
+
+      if (wasBackground && isNowActive) {
         if (view === "praying" && prayerStartTime) {
           const elapsed = Math.floor((Date.now() - prayerStartTime) / 1000);
           if (duration) {
-            // Timed prayer - count down
             setRemaining(Math.max(0, duration - elapsed));
           } else {
-            // Open-ended prayer - count up
             setRemaining(elapsed);
           }
         }
-
-        // Stop any ongoing vibration
-        if (Platform.OS === "android") {
-          Vibration.cancel();
-        }
+        if (Platform.OS === "android") Vibration.cancel();
       }
-      // App going to background
-      else if (
-        appState.current === "active" &&
-        nextAppState.match(/inactive|background/)
-      ) {
+
+      if (appState.current === "active" && isNowBackground) {
         if (view === "praying" && prayerStartTime) {
           savePrayerState(view, duration, prayerStartTime, remaining);
         }
       }
 
-      appState.current = nextAppState;
+      appState.current = next;
     });
-
-    return () => {
-      subscription.remove();
-    };
+    return () => sub.remove();
   }, [view, duration, remaining, prayerStartTime, savePrayerState]);
 
-  // Live clock - updates every second
-  useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Setup notifications on mount
-  useEffect(() => {
-    scheduleSacredHourNotifications();
-  }, []);
-
-  // Prayer timer - handles both timed and open-ended prayer
+  // ── Prayer countdown / countup ──
   useEffect(() => {
     if (view !== "praying" || !prayerStartTime) return;
-
     const interval = setInterval(() => {
       if (duration) {
-        // Timed prayer - count down
         setRemaining((r) => Math.max(0, r - 1));
       } else {
-        // Open-ended prayer - count up
         setRemaining((r) => r + 1);
       }
     }, 1000);
-
     return () => clearInterval(interval);
   }, [view, duration, prayerStartTime]);
 
-  // Auto-finish timed prayer when time runs out
+  // ── Auto-finish timed prayer ──
   useEffect(() => {
     if (duration && remaining <= 0 && view === "praying") {
       setShowModal(true);
     }
   }, [remaining, duration, view]);
 
-  // Determine greeting based on time of day
-  const greeting = useMemo(() => {
-    const h = now.getHours();
-    if (h >= 0 && h < 6) return "Good Evening";
-    if (h >= 6 && h < 12) return "Good Morning";
-    if (h >= 12 && h < 18) return "Good Afternoon";
-    return "Good Evening";
-  }, [now]);
+  // ── Pulse for upcoming prayer ──
+  const nextPrayer = useMemo(() => getNextPrayer(), [getNextPrayer]);
 
-  // Check if current hour is a sacred hour
-  const currentSacredHour = useMemo(() => {
-    const h = now.getHours();
-    return prayerHours.find((ph) => ph.hour === h);
-  }, [now]);
+  const isTimeNow = useMemo(() => {
+    if (!nextPrayer) return false;
+    const [hh, mm] = nextPrayer.time.split(":").map(Number);
+    return now.getHours() === hh && now.getMinutes() === mm;
+  }, [nextPrayer, now]);
 
-  // Pulse animation for sacred hour indicator
   useEffect(() => {
     let loop: Animated.CompositeAnimation | null = null;
-
-    if (currentSacredHour) {
+    if (isTimeNow) {
       loop = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
-            toValue: 1.2,
-            duration: 800,
+            toValue: 1.15,
+            duration: 700,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 800,
+            duration: 700,
             useNativeDriver: true,
           }),
         ]),
@@ -340,179 +256,242 @@ export default function Home() {
     } else {
       pulseAnim.setValue(1);
     }
-
     return () => loop?.stop();
-  }, [currentSacredHour, pulseAnim]);
+  }, [isTimeNow, pulseAnim]);
 
-  // Rotate scripture every 2 minutes during prayer
+  // ── Scripture rotation during prayer ──
   const activeScripture = useMemo(() => {
-    const index =
-      Math.floor(Math.abs(remaining) / 120) % prayerScriptures.length;
-    return prayerScriptures[index];
+    const idx =
+      Math.floor(Math.abs(remaining) / 120) % PRAYER_SCRIPTURES.length;
+    return PRAYER_SCRIPTURES[idx];
   }, [remaining]);
 
-  // Can only finish prayer if: open-ended OR timed prayer has completed
-  const canFinishPrayer =
-    duration === null || (duration !== null && remaining <= 0);
-
+  // ── Derived ──
+  const greeting = useMemo(() => getGreeting(now), [now]);
+  const canFinish = duration === null || (duration !== null && remaining <= 0);
   const minutes = Math.floor(Math.abs(remaining) / 60);
   const seconds = Math.abs(remaining) % 60;
 
-  const handleStartPraying = () => {
+  // ── Handlers ──
+  const handleStartPraying = useCallback(() => {
     const startTime = Date.now();
     setRemaining(duration ?? 0);
     setPrayerStartTime(startTime);
     setView("praying");
-    savePrayerState("praying", duration, startTime, duration ? 0 : 0);
-  };
+    savePrayerState("praying", duration, startTime, 0);
+  }, [duration, savePrayerState]);
 
-  const handleFinishPrayer = () => {
-    setShowModal(true);
-  };
+  const handleFinish = useCallback(() => setShowModal(true), []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setShowModal(false);
     setView("altar");
     setPrayerStartTime(null);
     setDuration(null);
     setRemaining(0);
     clearPrayerState();
-  };
+  }, [clearPrayerState]);
 
-  const handleBackToAltar = () => {
+  const handleBackToAltar = useCallback(() => {
     setView("altar");
     setPrayerStartTime(null);
     setDuration(null);
     setRemaining(0);
     clearPrayerState();
-  };
+  }, [clearPrayerState]);
+
+  // ─────────────────────────────────────────────────────────────────────────────
 
   return (
     <LinearGradient
       colors={[COLORS.background, COLORS.secondary, COLORS.background]}
-      style={styles.container}
+      style={{ flex: 1 }}
     >
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.content}>
-          {view === "altar" && (
-            <>
-              {/* <Text style={styles.headerLabel}>JERUSALEM TIME</Text> */}
-              <Text style={styles.appTitle}>KAIROS</Text>
+      <ScrollView
+        contentContainerStyle={{
+          paddingTop: insets.top + scaleSize(16),
+          paddingBottom: insets.bottom + verticalScale(100),
+          paddingHorizontal: scaleSize(24),
+          alignItems: "center",
+          flexGrow: 1,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ── ALTAR VIEW ── */}
+        {view === "altar" && (
+          <>
+            <Text style={styles.appTitle}>KAIROS</Text>
 
-              <Text style={styles.time}>
-                {now.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </Text>
-
-              <Text style={styles.greeting}>{greeting}</Text>
-
-              <View style={styles.scriptureBox}>
-                <Text style={styles.scriptureText}>{anchorScripture.text}</Text>
-                <View style={styles.divider} />
-                <Text style={styles.scriptureRef}>{anchorScripture.ref}</Text>
-              </View>
-
-              {currentSacredHour && (
-                <SacredHourDisplay
-                  currentSacredHour={currentSacredHour}
-                  pulseAnim={pulseAnim}
-                />
-              )}
-
-              <TouchableOpacity
-                style={styles.startButton}
-                onPress={() => setView("selectDuration")}
-              >
-                <Text style={styles.startIcon}>✨</Text>
-                <Text style={styles.startText}>START</Text>
-              </TouchableOpacity>
-
-              <Text style={styles.footerText}>
-                &quot;LORD, TEACH US TO PRAY&quot;
-              </Text>
-            </>
-          )}
-
-          {view === "selectDuration" && (
-            <>
-              <TouchableOpacity onPress={handleBackToAltar}>
-                <Text style={styles.back}>← Go Back</Text>
-              </TouchableOpacity>
-
-              <Text style={styles.sectionTitle}>Choose Prayer Time</Text>
-
-              {[5, 10, 15, 30, 45, 60].map((min) => {
-                const selected = duration === min * 60;
-                return (
-                  <TouchableOpacity
-                    key={min}
-                    style={[styles.option, selected && styles.optionSelected]}
-                    onPress={() => setDuration(min * 60)}
-                  >
-                    <Text
-                      style={[
-                        styles.optionText,
-                        selected && styles.optionTextSelected,
-                      ]}
-                    >
-                      {min} Minutes
-                    </Text>
-                  </TouchableOpacity>
-                );
+            {/* Live clock */}
+            <Text style={styles.time}>
+              {now.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
               })}
+            </Text>
 
-              <TouchableOpacity
+            <Text style={styles.greeting}>{greeting}</Text>
+
+            {/* Anchor scripture */}
+            <View style={[styles.card, { width: width * 0.9, maxWidth: 440 }]}>
+              <Text style={styles.scriptureText}>{anchorScripture.text}</Text>
+              <View style={styles.divider} />
+              <Text style={styles.scriptureRef}>{anchorScripture.ref}</Text>
+            </View>
+
+            {/* ── Next Prayer Card — from user's actual times ── */}
+            {nextPrayer ? (
+              <Animated.View
                 style={[
-                  styles.option,
-                  duration === null && styles.optionSelected,
+                  styles.nextPrayerCard,
+                  { transform: [{ scale: pulseAnim }] },
+                  isTimeNow && styles.nextPrayerCardActive,
                 ]}
-                onPress={() => setDuration(null)}
               >
-                <Text
-                  style={[
-                    styles.optionText,
-                    duration === null && styles.optionTextSelected,
-                  ]}
-                >
-                  I just wanna speak with God
+                {isTimeNow && (
+                  <View style={styles.nowBadge}>
+                    <Text style={styles.nowBadgeText}>NOW</Text>
+                  </View>
+                )}
+                <Text style={styles.nextPrayerLabel}>
+                  {isTimeNow ? "It's time to pray" : "Next Prayer"}
                 </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.startButton}
-                onPress={handleStartPraying}
-              >
-                <Text style={styles.startIcon}>✨</Text>
-                <Text style={styles.startText}>START PRAYING</Text>
-              </TouchableOpacity>
-              <View style={{ height: 80 }} />
-            </>
-          )}
-
-          {view === "praying" && (
-            <>
-              <PrayerTimer
-                minutes={minutes}
-                seconds={seconds}
-                canFinishPrayer={canFinishPrayer}
-                onBack={handleBackToAltar}
-                onFinish={handleFinishPrayer}
-              />
-
-              <View style={styles.scriptureBox}>
-                <Text style={styles.scriptureText}>{activeScripture.text}</Text>
-                <View style={styles.divider} />
-                <Text style={styles.scriptureRef}>{activeScripture.ref}</Text>
+                <Text style={styles.nextPrayerName}>{nextPrayer.name}</Text>
+                <Text style={styles.nextPrayerTime}>
+                  {format12h(nextPrayer.time)}
+                  {!isTimeNow && (
+                    <Text style={styles.nextPrayerCountdown}>
+                      {"  ·  "}in {formatUntil(minsUntil(nextPrayer.time))}
+                    </Text>
+                  )}
+                </Text>
+                {!!nextPrayer.subtitle && (
+                  <Text style={styles.nextPrayerSubtitle}>
+                    {nextPrayer.subtitle}
+                  </Text>
+                )}
+              </Animated.View>
+            ) : (
+              <View style={styles.noTimesCard}>
+                <Text style={styles.noTimesText}>
+                  No prayer times set.{"\n"}Go to Kairos to add them.
+                </Text>
               </View>
-            </>
-          )}
-        </ScrollView>
-      </SafeAreaView>
+            )}
 
+            {/* Sacred hour banner (if current time matches a user prayer) */}
+            {isTimeNow && nextPrayer && (
+              <SacredHourDisplay
+                currentSacredHour={{
+                  hour: parseInt(nextPrayer.time.split(":")[0]),
+                  name: nextPrayer.name,
+                  subtitle: nextPrayer.subtitle,
+                }}
+                pulseAnim={pulseAnim}
+              />
+            )}
+
+            <TouchableOpacity
+              style={styles.startButton}
+              onPress={() => setView("selectDuration")}
+            >
+              <Text style={styles.startIcon}>✨</Text>
+              <Text style={styles.startText}>START PRAYING</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.footerText}>
+              &quot;LORD, TEACH US TO PRAY&quot;
+            </Text>
+          </>
+        )}
+
+        {/* ── SELECT DURATION ── */}
+        {view === "selectDuration" && (
+          <>
+            <TouchableOpacity
+              onPress={handleBackToAltar}
+              style={{ alignSelf: "flex-start", marginBottom: scaleSize(8) }}
+            >
+              <Text style={styles.back}>← Go Back</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.sectionTitle}>Choose Prayer Time</Text>
+
+            {[5, 10, 15, 30, 45, 60].map((min) => {
+              const selected = duration === min * 60;
+              return (
+                <TouchableOpacity
+                  key={min}
+                  style={[styles.option, selected && styles.optionSelected]}
+                  onPress={() => setDuration(min * 60)}
+                >
+                  <Text
+                    style={[
+                      styles.optionText,
+                      selected && styles.optionTextSelected,
+                    ]}
+                  >
+                    {min} Minutes
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+
+            <TouchableOpacity
+              style={[
+                styles.option,
+                duration === null && styles.optionSelected,
+              ]}
+              onPress={() => setDuration(null)}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  duration === null && styles.optionTextSelected,
+                ]}
+              >
+                I just wanna speak with God
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.startButton}
+              onPress={handleStartPraying}
+            >
+              <Text style={styles.startIcon}>✨</Text>
+              <Text style={styles.startText}>START PRAYING</Text>
+            </TouchableOpacity>
+          </>
+        )}
+
+        {/* ── PRAYING ── */}
+        {view === "praying" && (
+          <>
+            <PrayerTimer
+              minutes={minutes}
+              seconds={seconds}
+              canFinishPrayer={canFinish}
+              onBack={handleBackToAltar}
+              onFinish={handleFinish}
+            />
+            <View
+              style={[
+                styles.card,
+                { width: width * 0.9, maxWidth: 440, marginTop: scaleSize(20) },
+              ]}
+            >
+              <Text style={styles.scriptureText}>{activeScripture.text}</Text>
+              <View style={styles.divider} />
+              <Text style={styles.scriptureRef}>{activeScripture.ref}</Text>
+            </View>
+          </>
+        )}
+      </ScrollView>
+
+      {/* ── Navbar ── */}
       <Navbar />
 
+      {/* ── Finish Modal ── */}
       <Modal visible={showModal} transparent animationType="fade">
         <View style={styles.modal}>
           <Text style={styles.modalTitle}>Pause. Write. Listen.</Text>
@@ -531,139 +510,201 @@ export default function Home() {
   );
 }
 
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: {
-    flexGrow: 1,
-    paddingTop: 70,
-    paddingBottom: 140,
-    paddingHorizontal: 24,
-    alignItems: "center",
-    minHeight: height,
-  },
-  headerLabel: {
-    fontSize: 11,
-    color: "#D4AF37",
-    letterSpacing: 2,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
   appTitle: {
-    fontSize: 20,
+    fontSize: scaleFont(18),
     color: COLORS.primary,
-    letterSpacing: 4,
+    letterSpacing: 5,
     fontWeight: "700",
-    marginBottom: 40,
+    marginBottom: scaleSize(32),
   },
   time: {
-    fontSize: 28,
+    fontSize: scaleFont(42),
     color: COLORS.primary,
-    marginBottom: 12,
-    fontWeight: "300",
-    letterSpacing: 1,
+    fontWeight: "200",
+    letterSpacing: 2,
+    marginBottom: scaleSize(8),
   },
   greeting: {
-    fontSize: 32,
+    fontSize: scaleFont(22),
     fontWeight: "400",
     color: COLORS.text,
-    marginBottom: 30,
+    marginBottom: scaleSize(24),
     textAlign: "center",
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
-  scriptureBox: {
-    backgroundColor: "rgba(255,255,255,0.08)",
-    padding: 24,
-    borderRadius: 20,
-    marginVertical: 20,
-    width: width * 0.9,
-    maxWidth: 440,
+  card: {
+    backgroundColor: "rgba(255,255,255,0.07)",
+    padding: scaleSize(22),
+    borderRadius: scaleSize(18),
+    marginVertical: scaleSize(12),
     alignSelf: "center",
     borderWidth: 1,
     borderColor: COLORS.border,
   },
   scriptureText: {
     color: COLORS.text,
-    fontSize: 17,
-    lineHeight: 28,
+    fontSize: scaleFont(15),
+    lineHeight: scaleFont(24),
     textAlign: "center",
     fontStyle: "italic",
   },
   divider: {
-    width: 40,
+    width: scaleSize(36),
     height: 1,
     backgroundColor: COLORS.primary,
     alignSelf: "center",
-    marginVertical: 12,
+    marginVertical: scaleSize(10),
   },
   scriptureRef: {
     color: COLORS.primary,
-    fontSize: 13,
+    fontSize: scaleFont(11),
     textAlign: "center",
     letterSpacing: 1,
   },
+
+  // ── Next prayer card ──
+  nextPrayerCard: {
+    width: width * 0.9,
+    maxWidth: 440,
+    backgroundColor: "rgba(212,175,55,0.07)",
+    borderRadius: scaleSize(18),
+    padding: scaleSize(20),
+    borderWidth: 1,
+    borderColor: "rgba(212,175,55,0.2)",
+    alignItems: "center",
+    marginVertical: scaleSize(12),
+  },
+  nextPrayerCardActive: {
+    backgroundColor: "rgba(212,175,55,0.14)",
+    borderColor: "rgba(212,175,55,0.5)",
+  },
+  nowBadge: {
+    backgroundColor: "#D4AF37",
+    borderRadius: scaleSize(20),
+    paddingHorizontal: scaleSize(12),
+    paddingVertical: scaleSize(3),
+    marginBottom: scaleSize(8),
+  },
+  nowBadgeText: {
+    color: "#1a0f2e",
+    fontSize: scaleFont(10),
+    fontWeight: "800",
+    letterSpacing: 2,
+  },
+  nextPrayerLabel: {
+    fontSize: scaleFont(10),
+    color: "rgba(212,175,55,0.6)",
+    letterSpacing: 2,
+    textTransform: "uppercase",
+    marginBottom: scaleSize(6),
+  },
+  nextPrayerName: {
+    fontSize: scaleFont(20),
+    fontWeight: "600",
+    color: "#fff",
+    letterSpacing: 0.3,
+    marginBottom: scaleSize(4),
+  },
+  nextPrayerTime: {
+    fontSize: scaleFont(14),
+    color: "#D4AF37",
+    fontWeight: "600",
+    letterSpacing: 0.5,
+  },
+  nextPrayerCountdown: {
+    fontSize: scaleFont(12),
+    color: "rgba(212,175,55,0.55)",
+    fontWeight: "400",
+  },
+  nextPrayerSubtitle: {
+    fontSize: scaleFont(11),
+    color: "rgba(255,255,255,0.35)",
+    marginTop: scaleSize(4),
+    textAlign: "center",
+  },
+  noTimesCard: {
+    width: width * 0.9,
+    maxWidth: 440,
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderRadius: scaleSize(18),
+    padding: scaleSize(20),
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    alignItems: "center",
+    marginVertical: scaleSize(12),
+  },
+  noTimesText: {
+    color: "rgba(255,255,255,0.3)",
+    fontSize: scaleFont(13),
+    textAlign: "center",
+    lineHeight: scaleFont(20),
+  },
+
+  // ── Buttons ──
   startButton: {
     backgroundColor: "transparent",
-    paddingVertical: 16,
-    paddingHorizontal: 60,
-    borderRadius: 40,
-    marginTop: 30,
-    marginBottom: 40,
-    minWidth: 260,
+    paddingVertical: scaleSize(14),
+    paddingHorizontal: scaleSize(48),
+    borderRadius: scaleSize(40),
+    marginTop: scaleSize(24),
+    marginBottom: scaleSize(16),
+    minWidth: scaleSize(240),
     borderWidth: 2,
     borderColor: COLORS.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
+    gap: scaleSize(8),
   },
-  startIcon: {
-    fontSize: 18,
-  },
+  startIcon: { fontSize: scaleFont(16) },
   startText: {
     color: COLORS.primary,
     fontWeight: "700",
-    fontSize: 16,
+    fontSize: scaleFont(14),
     letterSpacing: 2,
-    textAlign: "center",
   },
   footerText: {
-    color: "rgba(255, 255, 255, 0.4)",
-    fontSize: 11,
-    marginTop: 20,
+    color: "rgba(255,255,255,0.25)",
+    fontSize: scaleFont(10),
+    marginTop: scaleSize(8),
     letterSpacing: 2,
     fontStyle: "italic",
   },
   back: {
     color: COLORS.primary,
-    fontSize: 16,
-    marginVertical: 20,
+    fontSize: scaleFont(15),
+    marginVertical: scaleSize(12),
     fontWeight: "600",
   },
   sectionTitle: {
     color: COLORS.text,
-    fontSize: 24,
+    fontSize: scaleFont(22),
     fontWeight: "400",
-    marginBottom: 30,
+    marginBottom: scaleSize(24),
     textAlign: "center",
+    letterSpacing: 0.5,
   },
   option: {
-    backgroundColor: "rgba(255,255,255,0.08)",
-    padding: 18,
-    borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.07)",
+    padding: scaleSize(16),
+    borderRadius: scaleSize(16),
     width: width * 0.88,
     maxWidth: 400,
-    marginVertical: 8,
+    marginVertical: scaleSize(6),
     alignItems: "center",
     borderWidth: 1,
-    borderColor: COLORS.borderSecondary,
+    borderColor: "rgba(255,255,255,0.08)",
   },
   optionSelected: {
-    backgroundColor: "rgba(212, 175, 55, 0.15)",
+    backgroundColor: "rgba(212,175,55,0.12)",
     borderColor: COLORS.primary,
   },
   optionText: {
     color: COLORS.text,
-    fontSize: 16,
+    fontSize: scaleFont(15),
     textAlign: "center",
   },
   optionTextSelected: {
@@ -675,20 +716,20 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     justifyContent: "center",
     alignItems: "center",
-    padding: 36,
+    padding: scaleSize(36),
   },
   modalTitle: {
-    fontSize: 28,
+    fontSize: scaleFont(26),
     color: COLORS.text,
-    marginBottom: 24,
+    marginBottom: scaleSize(20),
     textAlign: "center",
     fontWeight: "400",
   },
   modalText: {
-    color: COLORS.textSecondary,
-    fontSize: 17,
+    color: "rgba(255,255,255,0.5)",
+    fontSize: scaleFont(15),
     textAlign: "center",
-    marginBottom: 50,
-    lineHeight: 28,
+    marginBottom: scaleSize(40),
+    lineHeight: scaleFont(24),
   },
 });

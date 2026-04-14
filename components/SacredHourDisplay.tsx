@@ -1,9 +1,11 @@
 import React from "react";
 import { Animated, Text, View } from "react-native";
-import { FONTS, COLORS } from "../constants/appConstants";
+import { COLORS, FONTS } from "../constants/appConstants";
 
 interface SacredHourDisplayProps {
-  currentSacredHour: { name: string; subtitle: string } | undefined;
+  currentSacredHour:
+    | { hour: number; name: string; subtitle: string }
+    | undefined;
   pulseAnim: Animated.Value;
 }
 
