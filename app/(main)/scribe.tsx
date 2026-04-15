@@ -7,7 +7,6 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,7 +14,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 import Navbar from "../../components/Navbar";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width, height } = Dimensions.get("window");
 
